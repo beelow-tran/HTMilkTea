@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H&T Milk Tea - Chi tiết món</title>
+    <link rel="icon" type="image/png" href="Ts-img/logo.png">
+    <link rel="stylesheet" href="style1.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="product-info-page">
+    <header class="main-header">
+    <nav class="nav-left">
+        <a href="Menu.html">Menu</a>
+        <a href="History.html">Lịch sử<span class="nav-long-text"> Đơn hàng</span></a>
+    </nav>
+
+    <a href="index.html" class="logo-center">
+        <img src="Ts-img/logo.png" alt="H&T Logo" class="header-logo">
+        <h1>H<span class="highlight">&</span>T</h1>
+    </a>
+
+    <nav class="nav-right">
+        <a href="Tray.html">Khay<span class="header-cart-badge" style="display:none;"></span></a>
+        <a href="Support.html">Hỗ trợ</a>
+    </nav>
+	</header>
+
+    <main class="product-detail-container">
+        <div class="detail-image">
+            <img src="" alt="Trà sữa" id="product-img">
+            
+            <div class="story-box">
+                <h4>📖 Chuyện nhà H&T:</h4>
+                <p class="product-story" id="product-story"></p>
+            </div>
+        </div>
+
+        <div class="detail-options">
+            <h2 id="product-name"></h2>
+            <p class="product-price" id="product-price"></p>
+            <p class="product-desc"></p>
+            <hr>
+
+           <div class="option-group">
+				<h4>Kích cỡ:</h4>
+				
+				<label class="upsize-toggle">
+					<input type="checkbox" id="upsize-check">
+					<span class="upsize-button">Up size (+5.000đ)</span>
+				</label>
+			</div>
+
+            <div class="topping-section">
+				<div class="topping-group">
+					<h4>Topping - Combo:</h4>
+					<div class="topping-options">
+						<input type="radio" id="combo-1" name="combo-choice" data-price="10000"hidden>
+						<label for="combo-1" class="topping-chip">Chân mèo Đen (10k)</label>
+
+						<input type="radio" id="combo-2" name="combo-choice" data-price="15000"hidden>
+						<label for="combo-2" class="topping-chip">Chân mèo Bạch Mai (15k)</label>
+					
+						<input type="radio" id="combo-3" name="combo-choice" data-price="15000"hidden>
+						<label for="combo-3" class="topping-chip">Ngũ sắc - Hắc Bạch (15k)</label>
+
+						<input type="radio" id="combo-4" name="combo-choice" data-price="13000"hidden>
+						<label for="combo-4" class="topping-chip">Tam Châu (13k)</label>
+					
+						<input type="radio" id="combo-5" name="combo-choice" data-price="15000"hidden>
+						<label for="combo-5" class="topping-chip">Chân mèo Đen, Thạch phô mai (15k)</label>
+
+						<input type="radio" id="combo-6" name="combo-choice" data-price="15000"hidden>
+						<label for="combo-6" class="topping-chip">Kem muối, Chân mèo, Thạch phô mai (15k)</label>
+					</div>
+								
+					<hr class="dashed-line">
+					
+					<h4>Topping Đơn:</h4>
+					<div class="topping-options">
+						<input type="checkbox" id="single-1" name="single-choice" data-price="5000"hidden>
+						<label for="single-1" class="topping-chip">Trân Châu Đen (5k)</label>
+
+						<input type="checkbox" id="single-2" name="single-choice" data-price="5000"hidden>
+						<label for="single-2" class="topping-chip">Châu ngũ sắc (5k)</label>
+					
+						<input type="checkbox" id="single-3" name="single-choice" data-price="5000"hidden>
+						<label for="single-3" class="topping-chip">Trân châu olong (5k)</label>
+
+						<input type="checkbox" id="single-4" name="single-choice" data-price="5000"hidden>
+						<label for="single-4" class="topping-chip">Kem Muối Biển (5k)</label>
+					
+						<input type="checkbox" id="single-5" name="single-choice" data-price="8000"hidden>
+						<label for="single-5" class="topping-chip">Thạch Phô Mai (8k)</label>
+
+						<input type="checkbox" id="single-6" name="single-choice" data-price="8000"hidden>
+						<label for="single-6" class="topping-chip">Khúc bạch (8k)</label>
+					
+					</div>
+				</div>
+			</div>
+
+            <div class="options-group">
+				<p class="options-title">Mức đường/đá:</p>
+				<div class="select-container">
+					<div class="custom-select">
+						<select name="sugar">
+							<option value="100">100% Đường</option>
+							<option value="70">70% Đường</option>
+							<option value="50">50% Đường</option>
+							<option value="0">Không Đường</option>
+						</select>
+					</div>
+
+					<div class="custom-select">
+						<select name="ice">
+							<option value="100">100% Đá</option>
+							<option value="50">50% Đá</option>
+							<option value="0">Không Đá</option>
+						</select>
+					</div>
+				</div>
+			</div>
+
+            <div class="cart-action-area">
+				<input type="checkbox" id="add-to-cart-toggle" hidden>
+
+				<label for="add-to-cart-toggle" class="add-to-cart-btn">
+					THÊM MÓN VÀO KHAY
+				</label>
+
+				<div class="cart-toast">
+					<span class="toast-icon">✓</span>
+					Đã thêm vào khay thành công!
+				</div>
+			</div>
+        </div>
+    </main>
+	
+	<a href="Tray.html" class="floating-tray-btn">KHAY</a>
+	
+<script>
+
+    // 1. KHO DỮ LIỆU:
+    const productData = {
+        // --- Dòng Signature ---
+        "HnT_SG": {
+            name: "H&T Structural Grey",
+            price: "30.000đ",
+            img: "Ts-img/HnT_SG.png",
+            desc: "Vẻ đẹp của sự thô mộc và cấu trúc vững chãi trong từng nốt vị",
+			story: " Ngày đầu tiên nảy ra ý tưởng lập H&T, hai đứa đang ngồi ngây ra trước một mảng tường bê tông xám xịt ở quán quen. Tự dưng H nhìn T bảo: 'Hay là... mình làm một ly trà mang vị của sự kiên định đi'. Thế là món trà này ra đời. Tụi mình rang lá trà thật đậm, giữ lại cái thô mộc nhất, giống như cái móng nhà vững chãi mà hai đứa đang xây cho ước mơ chung vậy",
+        },
+        "HnT_BE": { 
+            name: "H&T Botanical Equilibrium",
+            price: "30.000đ",
+            img: "Ts-img/HnT_BE.png",
+            desc: "Trạng thái cân bằng tĩnh lặng giữa hương thảo mộc và dư vị êm ái",
+			story: "Lần đó chúng mình đi phượt, dừng chân tại một căn nhà gỗ nhỏ giữa khu rừng - một khu vườn ướt đẫm sương mù vào rạng sáng. Nổi hứng, chúng mình đi dạo một lúc rồi lạc luôn :3. Không khí lạnh ngắt nhưng ngửi thấy mùi thảo mộc len lỏi làm lòng nhẹ bẫng. Trở về, hai đứa cặm cụi ở quầy pha chế mấy đêm liền chỉ để nhốt cái mùi sương sớm ấy vào ly nước. Và đây chính là khu rừng bí mật thu nhỏ mà H&T muốn mang đến tận tay bạn",
+        },
+
+        // --- Trà Sữa ---
+        "Ts_HongKong": {
+            name: "Trà Sữa Hong Kong",
+            price: "27.000đ",
+            img: "Ts-img/Ts_HongKong.jpg",
+            desc: "Nhịp sống nồng nhiệt trong hương trà chát đậm và sữa đặc béo ngậy",
+			story: "Có một dạo, T cứ mải mê xem lại những thước phim cũ của Vương Gia Vệ. Ánh đèn neon rực rỡ, những ngã tư mưa phùn hối hả. Thế là chúng mình quyết định nấu một nồi trà thật đậm. Khi dòng sữa béo ngậy hòa vào mặt nước sóng sánh, mọi thứ bỗng trở nên vừa vặn - như cái cách sự vội vã của phố thị luôn ẩn giấu những rung động tình cờ. Một ly trà sữa, mà gói trọn cả một bầu không khí điện ảnh",
+        },
+        "Ts_nuong": {
+            name: "Trà Sữa nướng",
+            price: "27.000đ",
+            img: "Ts-img/Ts_nuong.jpg",
+            desc: "Dư âm ấm áp của đường nướng cháy cạnh đọng lại sâu sắc",
+			story: "Câu chuyện bắt đầu từ một đêm cắm trại trên đồi. Lúc ấy hai đứa ngồi sát rạt vào nhau bên đống lửa tàn, mặc kệ sương muối bắt đầu thấm qua lớp áo mỏng. Khoảnh khắc ném vụn đường vào than hồng; Cái mùi caramel cháy sực nức giữa không gian tĩnh mịch đó, chẳng hiểu sao lại 'ám' lấy tâm trí chúng mình mãi đến tận khi về lại phố thị.  Trở về, H&T quyết định mang hương lửa trại ấy vào ly trà, để mỗi ngụm thức uống đều chở che một hơi ấm êm đềm, tựa như đêm đầy sao mà chúng mình từng có...",
+        },
+        "Ts_TQA": {
+            name: "Trà Sữa Thiết Quan Âm",
+            price: "25.000đ",
+            img: "Ts-img/Ts_TQA.jpg",
+            desc: "Sự thanh tao mộc mạc ẩn dưới lớp hương hoa dịu dàng tĩnh lặng",
+			story: "Người xưa kể rằng, giống trà này vốn nảy mầm dưới chân tượng Quan Âm, thấm đẫm hương lan thanh khiết của chốn thanh tịnh. Chúng mình chẳng có duyên lên núi hái trà như cổ tích, nhưng lại dành hàng chục đêm tỉ mẩn thử nghiệm từng mẻ ủ, chỉ để giữ lại trọn vẹn sự tao nhã ấy trong từng giọt nước. Ly trà này là cách chúng mình gửi đến cậu một khoảng lặng dịu dàng, để lòng mình được an yên giữa những ngày phố thị lao xao",
+        },
+        "Ts_Matcha": {
+            name: "Trà Sữa Matcha",
+            price: "25.000đ",
+            img: "Ts-img/Ts_Matcha.jpg",
+            desc: "Nét tươi mới của lá trà lục bích quyện trong dòng sữa thanh mát",
+			story: "Lần đầu tập đánh chổi tre, H lóng ngóng làm bụi trà bay vương vãi khắp nơi. Nhưng ngay khoảnh khắc lớp bọt xanh mịn màng nổi lên, mùi hương ngai ngái, thanh khiết ập đến khiến hai đứa mình bỗng lặng đi một nhịp. Chúng mình quyết định không thêm thắt bất kỳ hương liệu nào, chỉ để vị matcha nguyên bản tự nhiên hòa quyện vào dòng sữa tươi - một sự kết hợp thuần khiết nhưng lại tràn đầy sức sống",
+        },
+        "Ts_ThanTre": {
+            name: "Trà Sữa than tre",
+            price: "25.000đ",
+            img: "Ts-img/Ts_ThanTre.jpg",
+            desc: "Cấu trúc êm mượt, làm nền tảng tôn vinh trọn vẹn độ ngậy của sữa",
+			story: "Lọ than tre trên quầy lúc nào cũng mang một sức hút lạ lùng, tựa như thứ bột mịn chứa đầy những bí ẩn. Chỉ cần chúng mình rắc nhẹ vào sữa, sắc trắng tinh khôi lập tức tan đi, nhường chỗ cho một gam màu đen sâu thẳm. Vẻ ngoài trông có vẻ gai góc và trầm mặc là thế, nhưng khi uống vào lại là sự êm mượt, béo ngậy đến hiền lành. Một sự 'đối lập' đầy ngọt ngào mà chúng mình dành cho những ai thích khám phá những điều khác biệt ẩn sau lớp vỏ lạnh lùng",
+        },
+
+        // --- Trà Tươi & Sữa Tươi ---
+        "Tt_LaiSuaTuoi": {
+            name: "Trà Lài Sữa Tươi",
+            price: "25.000đ",
+            img: "Ts-img/Tt_LaiSuaTuoi.jpg",
+            desc: "Vẻ đẹp tinh khôi toát ra từ sắc trắng ngần và hương nhài nguyên bản",
+			story: "Cảm giác về những rung động đầu đời luôn trong vắt và chẳng có gì phải giấu giếm. Lúc pha ly trà này, chúng mình cũng giữ vẹn nguyên một tâm tư như thế. Chỉ có những búp nhài trắng ngần ướp hương dịu nhẹ quyện vào dòng sữa thanh mát, chẳng cần thêm thắt bất kỳ điều gì cầu kỳ. Một sự thuần khiết vẹn nguyên, cứ thế len lỏi và chạm khẽ vào lòng người",
+        },
+        "Tt_OlongSua": {
+            name: "Ô Long Sữa Tươi",
+            price: "25.000đ",
+            img: "Ts-img/Tt_OlongSua.jpg",
+            desc: "Vị trà bán lên men đằm thắm cuộn trào trong dòng sữa mượt mà",
+			story: "Lá trà Ô Long tựa như một kẻ lãng du, dừng chân giữa chừng hành trình lên men để giữ lại cho mình cả chút sương núi tinh khôi lẫn hương khói trầm mặc. Khi kẻ lãng du ấy gặp gỡ dòng sữa tươi mát lành, mọi thứ bỗng trở nên nhịp nhàng và hòa quyện đến lạ. Chúng mình gọi đây là một chuyến phiêu lưu êm ru, nơi vị trà cứ thế dịu dàng tan ra, vỗ về lấy tâm trí em sau một ngày dài",
+        },
+        "Tt_GaoRang": {
+            name: "Trà Gạo Rang",
+            price: "25.000đ",
+            img: "Ts-img/Tt_GaoRang.jpg",
+            desc: "Nét mộc mạc gói gọn trong hương thơm ấm áp của lúa mới sém lửa",
+			story: "Món này là một mảnh ký ức về những trưa hè trốn ngủ, khi T cứ lén lút ngồi nơi góc bếp xem bà rang gạo lứt. Tiếng hạt gạo nổ lép bép cùng mùi thơm của lúa mới sém lửa đã in sâu vào tâm trí từ dạo ấy. Chúng mình đã cùng nhau gom nhặt lại hương vị bình dị này, hòa cùng chút cốt trà trong vắt, tựa như một tấm vé khứ hồi đưa ta quay về với những năm tháng hồn nhiên bên bà",
+        },
+
+        // --- Trà Trái Cây ---
+        "T_VaiLai": {
+            name: "Trà Vải Lài",
+            price: "25.000đ",
+            img: "Ts-img/T_VaiLai.jpg",
+            desc: "Thanh mát, giải nhiệt cho ngày dài năng động",
+			story: "Nếu phải chọn một nàng thơ cho thực đơn, H&T sẽ gọi tên Trà Vải Lài. Nàng kiêu kỳ với vị ngọt đậm đà của từng thớ vải mọng nước, nhưng cũng đầy duyên dáng khi ẩn mình trong làn hương nhài thanh tao lướt nhẹ qua đầu lưỡi. Một ly trà vừa đủ ngọt ngào để người ta trót đem lòng tương tư ngay từ ngụm đầu tiên",
+        },
+        "T_DauTam": {
+            name: "Trà Dâu Tằm",
+            price: "22.000đ",
+            img: "Ts-img/T_DauTam.jpg",
+            desc: "Sắc đỏ tía quyến rũ mang theo vị chua thanh sắc nét của mùa hè",
+			story: "Nồi dâu tằm đang sên cứ sôi ùng ục, tỏa hương thơm nồng nàn tựa như vạc thuốc màu nhiệm của một bà tiên tốt bụng. Sắc đỏ tía sóng sánh như tà áo choàng nhung, giấu bên trong vị chua thanh cứ vương vấn mãi nơi đầu môi. Nhấp một ngụm trà, cậu hãy cứ để mình lạc vào một chương cổ tích mùa hè của riêng mình nhé",
+        },
+        "T_DaoCamSa": {
+            name: "Trà Đào Cam Sả",
+            price: "22.000đ",
+            img: "Ts-img/T_DaoCamSa.jpg",
+            desc: "Vị chua ngọt rực rỡ và sảng khoái đánh thức trọn vẹn mọi giác quan",
+			story: "Chúng mình hay đùa đây là 'ly nước giải cứu thế giới'. Có những ngày lên thực đơn mệt lử, đầu óc đứa nào cũng như muốn bốc hỏa, H vơ đại mấy lát cam tươi, vài miếng đào giòn rồi đập dập thêm nhánh sả, pha bừa một ly cho bõ tức. Ai dè cái vị chua ngọt bùng nổ ấy lại dập tắt ngay mọi cơn cáu kỉnh. Từ đó, nó trở thành món 'đinh' mỗi khi tụi mình cần sạc lại chút năng lượng để tiếp tục mơ mộng",
+        },
+        "T_MangCau": {
+            name: "Trà Mãng Cầu",
+            price: "22.000đ",
+            img: "Ts-img/T_MangCau.jpg",
+            desc: "Trải nghiệm chân thật với vị chua ngọt sảng khoái, nhai sần sật vui miệng",
+			story: "Cả một buổi chiều H và T cứ hì hụi lột vỏ, lẩy hạt từng trái mãng cầu gai góc. Tay dính đầy mủ, nhưng đổi lại là mẻ thịt trái cây chua ngọt dầm tay thơm nức nở. Tụi mình chẳng cần phép màu gì ở đây cả, chỉ muốn đem cái sự mộc mạc, thô ráp râm ran của trái cây vườn nhà đặt vào trong một ly nước trong veo",
+        },
+
+        // --- Topping (Món bán lẻ) ---
+        "Top_ChanMeo": {
+            name: "Pudding Chân Mèo",
+            price: "15.000đ",
+            img: "Ts-img/Top_ChanMeo.jpg",
+            desc: "Món topping biểu tượng với độ mềm mịn và tạo hình đáng yêu"
+        },
+        "Top_PhoMai": {
+            name: "Thạch Phô Mai Viên",
+            price: "8.000đ",
+            img: "Ts-img/Top_PhoMai.jpg",
+            desc: "Lớp vỏ dai giòn ôm trọn viên phô mai béo ngậy tan chảy"
+        },
+        "Top_KemMuoi": {
+            name: "Kem Muối Biển",
+            price: "5.000đ",
+            img: "Ts-img/Top_KemMuoi.jpg",
+            desc: "Lớp kem mặn đặc trưng, sự kết hợp hoàn hảo giữa vị béo và mặn"
+        }
+    };
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
+
+	if (productId && productData[productId]) {
+    const item = productData[productId];
+    document.getElementById('product-name').innerText = item.name;
+    document.getElementById('product-price').innerText = item.price;
+    const storyBox = document.querySelector('.story-box');
+    if (item.story) {
+        document.getElementById('product-story').innerText = item.story;
+        if (storyBox) storyBox.style.display = 'block';
+    } else {
+        if (storyBox) storyBox.style.display = 'none';
+    }
+    document.getElementById('product-img').src = item.img;
+    document.querySelector('.product-desc').innerText = item.desc;
+    
+	} else {
+    document.getElementById('product-name').innerText = "Món nước không tồn tại!";
+	}
+
+	const upsizeBtn = document.getElementById('upsize-check'); 
+	const priceDisplay = document.getElementById('product-price'); 
+	const comboRadios = document.querySelectorAll('input[name="combo-choice"]');
+	const singleCheckboxes = document.querySelectorAll('input[name="single-choice"]');
+
+	let basePrice = 0;
+	let currentTotal = 0; 
+
+	if (productId && productData[productId]) {
+    basePrice = parseInt(productData[productId].price.replace(/\D/g, ''));
+    currentTotal = basePrice; 
+	}
+
+	function updateFinalPrice() {
+		currentTotal = basePrice; 
+	
+    if (upsizeBtn && upsizeBtn.checked) {
+        currentTotal += 5000;
+    }
+
+
+    const checkedCombo = document.querySelector('input[name="combo-choice"]:checked');
+    if (checkedCombo) {
+
+        currentTotal += parseInt(checkedCombo.getAttribute('data-price')) || 0;
+    }
+
+    const checkedSingles = document.querySelectorAll('input[name="single-choice"]:checked');
+    checkedSingles.forEach(cb => {
+        currentTotal += parseInt(cb.getAttribute('data-price')) || 0;
+    });
+
+
+    if (priceDisplay) {
+        priceDisplay.innerText = currentTotal.toLocaleString('vi-VN') + 'đ';
+    }
+	}
+
+	if (upsizeBtn) {
+    upsizeBtn.addEventListener('change', updateFinalPrice);
+	}
+
+
+	comboRadios.forEach(radio => {
+		radio.addEventListener('change', function() {
+			if (this.checked) {
+            singleCheckboxes.forEach(cb => cb.checked = false); 
+			}
+			updateFinalPrice(); 
+		});
+	});
+
+	singleCheckboxes.forEach(cb => {
+    cb.addEventListener('change', function() {
+        if (this.checked) {
+            comboRadios.forEach(radio => radio.checked = false);
+        }
+        updateFinalPrice();
+    });
+	});
+
+	const addToCartBtn = document.querySelector('.add-to-cart-btn'); 
+	if (addToCartBtn) {
+	addToCartBtn.addEventListener('click', function() {
+    const pName = document.getElementById('product-name').innerText;
+    const pPrice = currentTotal; 
+
+
+    let size = "Size M";
+    if (document.getElementById('upsize-check') && document.getElementById('upsize-check').checked) {
+        size = "Size L";
+    }
+
+
+    const sugarSelect = document.querySelector('select[name="sugar"]');
+    let sugar = sugarSelect ? sugarSelect.options[sugarSelect.selectedIndex].text : "100% Đường";
+
+
+    const iceSelect = document.querySelector('select[name="ice"]');
+    let ice = iceSelect ? iceSelect.options[iceSelect.selectedIndex].text : "100% Đá";
+
+
+    let variants = `${size}, ${sugar}, ${ice}`;
+
+
+    let toppings = [];
+    const checkedCombo = document.querySelector('input[name="combo-choice"]:checked');
+    if (checkedCombo) toppings.push(checkedCombo.nextElementSibling.innerText.split(' (')[0].trim());
+
+    const checkedSingles = document.querySelectorAll('input[name="single-choice"]:checked');
+    checkedSingles.forEach(cb => {
+        toppings.push(cb.nextElementSibling.innerText.split(' (')[0].trim());
+    });
+
+    let toppingText = toppings.length > 0 ? "+ " + toppings.join(', ') : "Không thêm topping";
+
+    const item = {
+        name: pName,
+        price: pPrice,
+        variants: variants, 
+        toppings: toppingText,
+        quantity: 1 
+    };
+
+    let cart = JSON.parse(localStorage.getItem('ht_cart')) || [];
+    cart.push(item);
+    localStorage.setItem('ht_cart', JSON.stringify(cart));
+    if (typeof updateHeaderCartBadge === 'function') updateHeaderCartBadge();
+
+    // Kích hoạt Toast thông báo mượt mà mỗi lần bấm
+    const toast = document.querySelector('.cart-toast');
+    const toggle = document.getElementById('add-to-cart-toggle');
+    if (toggle) toggle.checked = false;
+    if (toast) {
+        toast.classList.add('show');
+        clearTimeout(window.cartToastTimer);
+        window.cartToastTimer = setTimeout(() => {
+            toast.classList.remove('show');
+            if (toggle) toggle.checked = false;
+        }, 2200);
+    }
+
+
+	});
+	}
+
+</script>
+
+	<footer class="ht-footer">
+    <div class="footer-container">
+        <h1>H&T Trà sữa</h1>
+        <p>Địa chỉ: 123 Đường Lê Lợi, TP. Vũng Tàu</p>
+        <p>Email: lienhe@ht-trasua.com | Hotline: 09xx.xxx.xxx</p>
+        
+        <div class="footer-social">
+            <p>Kết nối với chúng mình:</p>
+            <div class="social-icons">
+                <a href="#" class="icon-link"><i class="fab fa-facebook"></i></a>
+                <a href="#" class="icon-link"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="icon-link"><i class="fab fa-facebook-messenger"></i></a>
+                <a href="#" class="icon-link"><i class="fab fa-tiktok"></i></a>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+           <a href="Terms.html">Điều khoản</a> | <a href="Privacy.html">Chính sách bảo mật</a>
+        </div>
+        
+        <hr class="footer-divider">
+        
+        <p class="copyright">© 2026 H&T Trà sữa. Thiết kế và Phát triển bởi: Trần Thái Hoài | Hỗ trợ giai đoạn đầu: Ngọc Thúy. All rights reserved.</p>
+    </div>
+	</footer>
+
+    <script>
+    function updateHeaderCartBadge() {
+        try {
+            let cart = JSON.parse(localStorage.getItem('ht_cart')) || [];
+            let total = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+            let badges = document.querySelectorAll('.header-cart-badge');
+            badges.forEach(b => {
+                if (total > 0) {
+                    b.textContent = total;
+                    b.style.display = 'inline-block';
+                } else {
+                    b.style.display = 'none';
+                }
+            });
+        } catch(e) {}
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', updateHeaderCartBadge);
+    } else {
+        updateHeaderCartBadge();
+    }
+    </script>
+</body>
+</html>
+

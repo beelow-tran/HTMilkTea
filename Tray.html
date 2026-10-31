@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H&T Milk Tea - Khay Hàng</title>
+    <link rel="icon" type="image/png" href="Ts-img/logo.png">
+    <link rel="stylesheet" href="style1.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="vietnam_address.js"></script>
+</head>
+<body class="product-info-page">
+
+    <header class="main-header">
+    <nav class="nav-left">
+		<a href="Menu.html" class="back-link">← CHỌN <span class="nav-long-text">THÊM </span>MÓN</a>
+    </nav>
+
+    <a href="index.html" class="logo-center">
+        <img src="Ts-img/logo.png" alt="H&T Logo" class="header-logo">
+        <h1>H<span class="highlight">&</span>T</h1>
+    </a>
+
+    <nav class="nav-right">
+		<a href="Tray.html" class="active">Khay<span class="header-cart-badge" style="display:none;"></span></a>
+        <a href="Support.html">Hỗ trợ</a>
+    </nav>
+	</header>
+
+<section class="brand-section tray-section">
+    <nav class="tray-header">
+        <h2>Khay nước của chúng ta</h2>
+        <p>Cùng kiểm tra lại những hương vị đã chọn nhé!</p>
+    </nav>
+
+    <div id="cart-items-container"></div>
+
+    <!-- 1. THÔNG TIN NHẬN HÀNG -->
+    <div class="brand-item tray-address">
+        <h2>Thông tin nhận hàng:</h2>
+        
+        <!-- Tên & Số điện thoại -->
+        <div class="tray-form-group">
+            <div class="tray-input-wrapper">
+                <input type="text" id="customer-name" class="tray-input" placeholder="Tên người nhận" required autocomplete="off">
+                <div class="autocomplete-dropdown" id="dropdown-customer-name"></div>
+            </div>
+            <div class="tray-input-wrapper">
+                <input type="tel" id="customer-phone" class="tray-input" placeholder="Số điện thoại" required autocomplete="off">
+                <div class="autocomplete-dropdown" id="dropdown-customer-phone"></div>
+            </div>
+        </div>
+
+        <!-- Công tắc gạt iOS Switch: Việt Nam / Khu vực khác -->
+        <div class="tray-toggle-wrapper">
+            <span class="tray-toggle-label">Khu vực nhận hàng:</span>
+            <div class="ios-switch-container">
+                <button type="button" class="ios-switch-btn active" id="btn-region-vn" onclick="setRegion('vn')">Việt Nam</button>
+                <button type="button" class="ios-switch-btn" id="btn-region-other" onclick="setRegion('other')">Khu vực khác</button>
+            </div>
+        </div>
+
+        <!-- Địa chỉ Việt Nam: Dropdowns liên kết động -->
+        <div id="group-address-vn" style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
+            <div class="tray-form-group">
+                <select id="customer-city" class="tray-input tray-select" onchange="onCityChange()">
+                    <option value="">-- Chọn Tỉnh / Thành phố --</option>
+                </select>
+                <select id="customer-ward" class="tray-input tray-select" onchange="onWardChange()">
+                    <option value="">-- Chọn Phường / Xã / Đặc khu --</option>
+                </select>
+            </div>
+            <div class="tray-input-wrapper">
+                <input type="text" id="customer-street" class="tray-input" placeholder="Số nhà, tên đường, tòa nhà/căn hộ..." autocomplete="off">
+                <div class="autocomplete-dropdown" id="dropdown-customer-street"></div>
+            </div>
+        </div>
+
+        <!-- Địa chỉ Khu vực khác (Mặc định ẩn) -->
+        <div id="group-address-other" style="display: none; width: 100%;">
+            <div class="tray-input-wrapper">
+                <input type="text" id="customer-other-address" class="tray-input" placeholder="Nhập địa chỉ nhận hàng của bạn (Quốc tế / Khu vực khác)..." autocomplete="off">
+                <div class="autocomplete-dropdown" id="dropdown-customer-other-address"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. PHƯƠNG THỨC VẬN CHUYỂN -->
+    <div class="brand-item tray-shipping">
+        <h2>Phương thức vận chuyển:</h2>
+        
+        <!-- Xe máy -->
+        <label class="shipping-option-card selected" id="card-ship-bike" onclick="selectShipping('bike')">
+            <input type="radio" name="shipping-method" id="ship-bike" value="bike" checked style="display:none;">
+            <div class="shipping-details">
+                <div class="shipping-title">Giao hàng Xe máy (Shipper)</div>
+                <div class="shipping-sub" id="bike-subtext">Đồng giá 16.000đ - Chỉ hỗ trợ khu vực có chi nhánh H&T</div>
+            </div>
+            <span class="shipping-price">16.000đ</span>
+        </label>
+
+        <!-- Drone -->
+        <label class="shipping-option-card" id="card-ship-drone" onclick="selectShipping('drone')">
+            <input type="radio" name="shipping-method" id="ship-drone" value="drone" style="display:none;">
+            <div class="shipping-details">
+                <div class="shipping-title">Drone phản lực H&T</div>
+                <div class="shipping-sub">Bay thẳng đến ban công, sân thượng tầng cao</div>
+            </div>
+            <span class="shipping-price">280.000đ</span>
+        </label>
+
+        <!-- Trực thăng -->
+        <label class="shipping-option-card" id="card-ship-heli" onclick="selectShipping('heli')">
+            <input type="radio" name="shipping-method" id="ship-heli" value="heli" style="display:none;">
+            <div class="shipping-details">
+                <div class="shipping-title">Trực thăng cá nhân H&T Air Copter</div>
+                <div class="shipping-sub">Bay siêu tốc xuyên tỉnh - Thả dây thừng tận nơi</div>
+            </div>
+            <span class="shipping-price">1.500.000đ</span>
+        </label>
+
+        <!-- Phi cơ tư nhân (Chỉ hiển thị khi chọn Khu vực khác) -->
+        <label class="shipping-option-card" id="card-ship-jet" onclick="selectShipping('jet')" style="display: none;">
+            <input type="radio" name="shipping-method" id="ship-jet" value="jet" style="display:none;">
+            <div class="shipping-details">
+                <div class="shipping-title">Phi cơ tư nhân H&T (Private Jet)</div>
+                <div class="shipping-sub">Bay thẳng xuyên lục địa (~8 phút) - Hạ cánh tại sân bay quốc tế gần nhất</div>
+            </div>
+            <span class="shipping-price">18.000.000đ</span>
+        </label>
+        <!-- Kẻ dịch chuyển -->
+        <label class="shipping-option-card" id="card-ship-portal" onclick="selectShipping('portal')">
+            <input type="radio" name="shipping-method" id="ship-portal" value="portal" style="display:none;">
+            <div class="shipping-details">
+                <div class="shipping-title">Kẻ dịch chuyển không gian</div>
+                <div class="shipping-sub">Xé toạc không thời gian - Xuất hiện ngay trên bàn</div>
+            </div>
+            <span class="shipping-price">85.000.000đ</span>
+        </label>
+
+        <!-- Thông báo đặc quyền giảm 70% thời gian ship khi chọn Phường Vũng Tàu hoặc Bà Rịa -->
+        <div id="fast-shipping-banner" style="display: none; margin-top: 10px; padding: 10px 14px; background: #f0fdf4; border: 1px dashed #86efac; border-radius: 12px; color: #16a34a; font-size: 0.88em; font-weight: 600;">
+            <i class="fas fa-bolt"></i> Bạn đang ở gần trụ sở chính của H&T, đơn hàng sẽ sớm được giao đến bạn 
+        </div>
+    </div>
+
+    <!-- 3. HÌNH THỨC THANH TOÁN (COD CỐ ĐỊNH) -->
+    <div class="brand-item tray-payment">
+        <h2>Hình thức thanh toán:</h2>
+        <div class="tray-payment-option">
+            <input type="radio" id="pay-cod" name="payment-method" checked disabled>
+            <label for="pay-cod">Thanh toán khi nhận hàng (Ship COD)</label>
+        </div>
+    </div>
+
+    <!-- 3.b. MÃ ƯU ĐÃI (VOUCHER) -->
+    <div class="brand-item tray-voucher">
+        <div class="voucher-input-group">
+            <input type="text" id="voucher-code" placeholder="Mã ưu đãi (Voucher)..." autocomplete="off" spellcheck="false">
+            <button type="button" id="btn-apply-voucher" onclick="applyVoucher()">Áp dụng</button>
+        </div>
+        <div id="voucher-message" class="voucher-message" style="display: none;"></div>
+    </div>
+
+    <!-- 4. BẢNG TỔNG THANH TOÁN (BREAKDOWN) -->
+    <div class="brand-item tray-breakdown">
+        <div class="breakdown-row" id="voucher-breakdown-row" style="display: none; color: #16a34a; font-weight: 600;">
+            <span>Ưu đãi áp dụng:</span>
+            <span id="voucher-applied-text">FASTBAR (Pha chế 10s)</span>
+        </div>
+        <div class="breakdown-row">
+            <span>Tiền món:</span>
+            <span id="drinks-subtotal">0đ</span>
+        </div>
+        <div class="breakdown-row">
+            <span>Phí vận chuyển:</span>
+            <span id="shipping-fee-display">16.000đ</span>
+        </div>
+        <div class="breakdown-row total-row">
+            <span>Tổng thanh toán:</span>
+            <span id="cart-total-price">0đ</span>
+        </div>
+    </div>
+	
+</section>
+
+<script>
+let appliedVoucher = null;
+
+function applyVoucher() {
+    let input = document.getElementById('voucher-code');
+    let msgEl = document.getElementById('voucher-message');
+    let breakdownRow = document.getElementById('voucher-breakdown-row');
+    let breakdownTxt = document.getElementById('voucher-applied-text');
+    if (!input || !msgEl) return;
+
+    let code = input.value.trim().toUpperCase();
+    if (!code) {
+        msgEl.className = 'voucher-message error';
+        msgEl.innerHTML = 'Vui lòng nhập mã ưu đãi.';
+        msgEl.style.display = 'flex';
+        return;
+    }
+
+    if (code === 'FASTBAR') {
+        appliedVoucher = {
+            code: 'FASTBAR',
+            description: 'Pha chế thần tốc 10s',
+            prepDuration: 10
+        };
+        msgEl.className = 'voucher-message success';
+        msgEl.innerHTML = `<span>✓ Đã áp dụng <strong>FASTBAR</strong>: Giảm thời gian pha chế xuống 10s!</span> <button type="button" class="btn-remove-voucher" onclick="removeVoucher()">[Hủy]</button>`;
+        msgEl.style.display = 'flex';
+        input.disabled = true;
+        let btn = document.getElementById('btn-apply-voucher');
+        if (btn) btn.disabled = true;
+
+        if (breakdownRow) breakdownRow.style.display = 'flex';
+        if (breakdownTxt) breakdownTxt.innerText = 'FASTBAR (Pha chế 10s)';
+    } else {
+        msgEl.className = 'voucher-message error';
+        msgEl.innerHTML = 'Mã ưu đãi không hợp lệ hoặc đã hết hạn.';
+        msgEl.style.display = 'flex';
+    }
+}
+
+function removeVoucher() {
+    appliedVoucher = null;
+    let input = document.getElementById('voucher-code');
+    let msgEl = document.getElementById('voucher-message');
+    let btn = document.getElementById('btn-apply-voucher');
+    let breakdownRow = document.getElementById('voucher-breakdown-row');
+
+    if (input) {
+        input.value = '';
+        input.disabled = false;
+    }
+    if (btn) btn.disabled = false;
+    if (msgEl) {
+        msgEl.style.display = 'none';
+        msgEl.innerHTML = '';
+    }
+    if (breakdownRow) {
+        breakdownRow.style.display = 'none';
+    }
+}
+
+let currentRegion = 'vn';
+let currentShipping = 'bike';
+let drinkSubtotal = 0;
+
+// Các tỉnh/thành phố có chi nhánh cửa hàng H&T (cho phép xe máy)
+const STORE_LOCATIONS = [
+    'Thành phố Hồ Chí Minh', 
+    'Thành phố Hà Nội', 
+    'Thành phố Đà Nẵng', 
+    'Thành phố Cần Thơ', 
+    'Tỉnh Lâm Đồng'
+];
+
+const SHIPPING_FEES = {
+    bike: 16000,
+    drone: 280000,
+    heli: 1500000,
+    jet: 18000000,
+    portal: 85000000
+};
+
+const SHIPPING_NAMES = {
+    bike: 'Giao hàng Xe máy (Shipper)',
+    drone: 'Drone phản lực H&T',
+    heli: 'Trực thăng cá nhân H&T Air Copter',
+    jet: 'Phi cơ tư nhân H&T (Private Jet)',
+    portal: 'Kẻ dịch chuyển không gian'
+};
+
+// Khởi tạo đổ danh sách Tỉnh/TP từ VIETNAM_LOCATIONS
+function initAddressDropdowns() {
+    const citySelect = document.getElementById('customer-city');
+    if (!citySelect || typeof VIETNAM_LOCATIONS === 'undefined') return;
+
+    citySelect.innerHTML = '<option value="">-- Chọn Tỉnh / Thành phố --</option>';
+
+    // 1. Nhóm Thành phố trực thuộc Trung ương
+    if (VIETNAM_LOCATIONS.cities && VIETNAM_LOCATIONS.cities.length > 0) {
+        const cityGroup = document.createElement('optgroup');
+        cityGroup.label = 'Thành phố trực thuộc Trung ương';
+        VIETNAM_LOCATIONS.cities.forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c.city_name;
+            opt.textContent = c.city_name;
+            cityGroup.appendChild(opt);
+        });
+        citySelect.appendChild(cityGroup);
+    }
+
+    // 2. Nhóm Các Tỉnh thành
+    if (VIETNAM_LOCATIONS.provinces && VIETNAM_LOCATIONS.provinces.length > 0) {
+        const provGroup = document.createElement('optgroup');
+        provGroup.label = 'Các Tỉnh thành';
+        VIETNAM_LOCATIONS.provinces.forEach(p => {
+            const opt = document.createElement('option');
+            opt.value = p.province_name;
+            opt.textContent = p.province_name;
+            provGroup.appendChild(opt);
+        });
+        citySelect.appendChild(provGroup);
+    }
+}
+
+// Khi người dùng chọn Tỉnh / Thành phố
+function onWardChange() {
+    if (typeof closeAllDropdowns === 'function') closeAllDropdowns();
+    const wardSelect = document.getElementById('customer-ward');
+    const banner = document.getElementById('fast-shipping-banner');
+    if (!wardSelect || !banner) return;
+    
+    let w = (wardSelect.value || '').trim();
+    if (w === 'Phường Vũng Tàu' || w === 'Phường Bà Rịa') {
+        banner.style.display = 'block';
+    } else {
+        banner.style.display = 'none';
+    }
+}
+
+function onCityChange() {
+    if (typeof closeAllDropdowns === 'function') closeAllDropdowns();
+    const streetInput = document.getElementById('customer-street');
+    if (streetInput) streetInput.value = '';
+    const citySelect = document.getElementById('customer-city');
+    const wardSelect = document.getElementById('customer-ward');
+    if (!citySelect || !wardSelect) return;
+
+    const selectedName = citySelect.value;
+    wardSelect.innerHTML = '<option value="">-- Chọn Phường / Xã / Đặc khu --</option>';
+    onWardChange();
+
+    if (!selectedName || typeof VIETNAM_LOCATIONS === 'undefined') {
+        checkBikeAvailability();
+        return;
+    }
+
+    // Tìm trong cities hoặc provinces
+    let found = (VIETNAM_LOCATIONS.cities || []).find(c => c.city_name === selectedName);
+    if (!found) {
+        found = (VIETNAM_LOCATIONS.provinces || []).find(p => p.province_name === selectedName);
+    }
+
+    if (found && found.units) {
+        found.units.forEach(u => {
+            const opt = document.createElement('option');
+            opt.value = u.name;
+            opt.textContent = `${u.name}`;
+            wardSelect.appendChild(opt);
+        });
+    }
+
+    checkBikeAvailability();
+}
+
+function setRegion(region) {
+    if (typeof closeAllDropdowns === 'function') closeAllDropdowns();
+    currentRegion = region;
+    const btnVn = document.getElementById('btn-region-vn');
+    const btnOther = document.getElementById('btn-region-other');
+    const groupVn = document.getElementById('group-address-vn');
+    const groupOther = document.getElementById('group-address-other');
+
+    const cardBike = document.getElementById('card-ship-bike');
+    const cardDrone = document.getElementById('card-ship-drone');
+    const cardHeli = document.getElementById('card-ship-heli');
+    const cardJet = document.getElementById('card-ship-jet');
+
+    if (region === 'vn') {
+        if (btnVn) btnVn.classList.add('active');
+        if (btnOther) btnOther.classList.remove('active');
+        if (groupVn) groupVn.style.display = 'flex';
+        if (groupOther) groupOther.style.display = 'none';
+
+        // 1. Ở Việt Nam: Hiện Xe máy, Drone, Trực thăng; Ẩn Phi cơ tư nhân
+        if (cardBike) cardBike.style.display = 'flex';
+        if (cardDrone) cardDrone.style.display = 'flex';
+        if (cardHeli) cardHeli.style.display = 'flex';
+        if (cardJet) cardJet.style.display = 'none';
+
+        // Nếu trước đó đang chọn jet, chuyển về xe máy
+        if (currentShipping === 'jet') {
+            selectShipping('bike');
+        }
+
+        checkBikeAvailability();
+    } else {
+        if (btnOther) btnOther.classList.add('active');
+        if (btnVn) btnVn.classList.remove('active');
+        if (groupVn) groupVn.style.display = 'none';
+        if (groupOther) groupOther.style.display = 'block';
+
+        // 2. Ở Khu vực khác: Ẩn hoàn toàn Xe máy, Drone và Trực thăng; Hiện Phi cơ tư nhân
+        if (cardBike) cardBike.style.display = 'none';
+        if (cardDrone) cardDrone.style.display = 'none';
+        if (cardHeli) cardHeli.style.display = 'none';
+        if (cardJet) cardJet.style.display = 'flex';
+
+        // Nếu đang chọn Xe máy, Drone hoặc Trực thăng, tự động chuyển sang Phi cơ tư nhân
+        if (currentShipping === 'bike' || currentShipping === 'drone' || currentShipping === 'heli') {
+            selectShipping('jet');
+        }
+    }
+    updatePrices();
+}
+
+function checkBikeAvailability() {
+    const cardBike = document.getElementById('card-ship-bike');
+    const bikeSubtext = document.getElementById('bike-subtext');
+    if (!cardBike) return;
+
+    if (currentRegion !== 'vn') {
+        cardBike.classList.add('disabled');
+        if (bikeSubtext) bikeSubtext.innerText = 'Không khả dụng ở khu vực quốc tế';
+        if (currentShipping === 'bike') selectShipping('drone');
+        return;
+    }
+
+    const citySelect = document.getElementById('customer-city');
+    const selectedCity = citySelect ? citySelect.value : '';
+
+    // Nếu chưa chọn Tỉnh/TP, mặc định mở xe máy
+    if (!selectedCity) {
+        cardBike.classList.remove('disabled');
+        if (bikeSubtext) bikeSubtext.innerText = 'Đồng giá 16.000đ - Chỉ hỗ trợ khu vực có chi nhánh H&T';
+        return;
+    }
+
+    // Kiểm tra xem Tỉnh/TP có thuộc chuỗi cửa hàng H&T không
+    const hasStore = STORE_LOCATIONS.includes(selectedCity);
+
+    if (hasStore) {
+        cardBike.classList.remove('disabled');
+        if (bikeSubtext) bikeSubtext.innerText = 'Khả dụng! Shipper H&T sẽ giao tận nơi.';
+    } else {
+        cardBike.classList.add('disabled');
+        if (bikeSubtext) bikeSubtext.innerText = 'Khu vực này chưa có quán H&T - Vui lòng chọn Drone hoặc Trực thăng!';
+        if (currentShipping === 'bike') {
+            selectShipping('drone');
+        }
+    }
+}
+
+function selectShipping(method) {
+    const cardBike = document.getElementById('card-ship-bike');
+    if (method === 'bike' && cardBike && cardBike.classList.contains('disabled')) {
+        alert('Phương thức Giao hàng Xe máy chỉ hỗ trợ trong phạm vi Tỉnh/Thành phố có chuỗi cửa hàng H&T (TP.HCM, Hà Nội, Đà Nẵng, Cần Thơ, Lâm Đồng - Đà Lạt). Vui lòng chọn Drone, Trực thăng hoặc Dịch chuyển!');
+        return;
+    }
+
+    currentShipping = method;
+    ['bike', 'drone', 'heli', 'jet', 'portal'].forEach(m => {
+        const card = document.getElementById('card-ship-' + m);
+        const radio = document.getElementById('ship-' + m);
+        if (card) {
+            if (m === method) {
+                card.classList.add('selected');
+                if (radio) radio.checked = true;
+            } else {
+                card.classList.remove('selected');
+                if (radio) radio.checked = false;
+            }
+        }
+    });
+
+    updatePrices();
+}
+
+function updatePrices() {
+    const subtotalEl = document.getElementById('drinks-subtotal');
+    const shippingFeeEl = document.getElementById('shipping-fee-display');
+    const totalPriceEl = document.getElementById('cart-total-price');
+
+    const fee = SHIPPING_FEES[currentShipping] || 0;
+    const grandTotal = drinkSubtotal + fee;
+
+    if (subtotalEl) subtotalEl.innerText = drinkSubtotal.toLocaleString('vi-VN') + 'đ';
+    if (shippingFeeEl) shippingFeeEl.innerText = fee.toLocaleString('vi-VN') + 'đ';
+    if (totalPriceEl) totalPriceEl.innerText = grandTotal.toLocaleString('vi-VN') + 'đ';
+}
+
+function loadCart() {
+    if (typeof initAutocompleteEvents === 'function') initAutocompleteEvents();
+    initAddressDropdowns();
+
+    const cartContainer = document.getElementById('cart-items-container');
+    const actionContainer = document.getElementById('tray-action-container');
+    let cart = JSON.parse(localStorage.getItem('ht_cart')) || [];
+
+    if (cart.length === 0) {
+        cartContainer.innerHTML = '<p style="text-align:center; color:#666; margin: 50px 0;">Khay nước của bạn đang trống. Hãy chọn món ngay nào!</p>';
+        drinkSubtotal = 0;
+        updatePrices();
+        if (actionContainer) {
+            actionContainer.innerHTML = '<a href="Menu.html" class="quick-order-banner" style="text-decoration: none; font-size: 1.2em; padding: 15px 40px;">CHỌN MÓN NGAY</a>';
+        }
+        return;
+    }
+
+    if (actionContainer) {
+        actionContainer.innerHTML = '<button onclick="checkoutOrder()" class="quick-order-banner" style="border: none; cursor: pointer; font-size: 1.2em; padding: 15px 40px;">CHỐT ĐƠN NGAY</button>';
+    }
+
+    let htmlContent = '';
+    drinkSubtotal = 0;
+
+    cart.forEach((item, index) => {
+        let price = typeof item.price === 'string' ? parseInt(item.price.replace(/\D/g, '')) : item.price;
+        if (isNaN(price)) price = 0;
+
+        drinkSubtotal += price * (item.quantity || 1);
+        
+        htmlContent += `
+        <div class="brand-item tray-item">
+            <div class="tray-item-info">
+                <h3>${item.name}</h3>
+                <p class="tray-variants">${item.variants || ''}</p>
+                <p class="tray-toppings">${item.toppings || ''}</p>
+            </div>
+            <div class="tray-item-price">
+                <h3>${price.toLocaleString('vi-VN')}đ</h3>
+                <p>SL: ${item.quantity || 1}</p>
+                <button onclick="removeItem(${index})" class="tray-item-delete-btn" title="Xóa món này">[Xóa]</button>
+            </div>
+        </div>`;
+    });
+
+    cartContainer.innerHTML = htmlContent;
+    updatePrices();
+}
+
+function checkoutOrder() {
+    let cart = JSON.parse(localStorage.getItem('ht_cart')) || [];
+    if (cart.length === 0) {
+        alert('Khay nước của bạn đang trống. Hãy chọn món ngay!');
+        window.location.href = 'Menu.html';
+        return;
+    }
+
+    let nameInput = document.getElementById('customer-name');
+    let phoneInput = document.getElementById('customer-phone');
+    let name = nameInput ? nameInput.value.trim() : '';
+    let phone = phoneInput ? phoneInput.value.trim() : '';
+    
+    if (!name) {
+        alert('Bạn ơi, cho chúng mình biết tên của bạn nhé!');
+        if (nameInput) nameInput.focus();
+        return;
+    }
+
+    if (!phone) {
+        alert('Bạn quên nhập số điện thoại nhận trà sữa rồi!');
+        if (phoneInput) {
+            phoneInput.focus();
+        }
+        return;
+    }
+
+    // Chuẩn hóa: loại bỏ khoảng trắng, dấu gạch nối, dấu chấm
+    let cleanPhone = phone.replace(/[\s.-]/g, '');
+
+    // Kiểm tra số điện thoại di động Việt Nam:
+    // Đúng 10 chữ số, bắt đầu bằng các đầu số nhà mạng VN: 03, 05, 07, 08, 09
+    const vnPhoneRegex = /^(03|05|07|08|09)\d{8}$/;
+    if (currentRegion === 'vn' && !vnPhoneRegex.test(cleanPhone)) {
+        alert('Số điện thoại không hợp lệ!\nVui lòng nhập đúng số điện thoại di động tại Việt Nam (10 chữ số, bắt đầu bằng 03, 05, 07, 08 hoặc 09).');
+        if (phoneInput) {
+            phoneInput.focus();
+            phoneInput.select();
+        }
+        return;
+    } else if (currentRegion !== 'vn' && !/^\+?\d{8,15}$/.test(cleanPhone)) {
+        alert('Số điện thoại không hợp lệ!\nVui lòng nhập đúng số điện thoại liên lạc từ 8 - 15 chữ số.');
+        if (phoneInput) {
+            phoneInput.focus();
+            phoneInput.select();
+        }
+        return;
+    }
+    phone = cleanPhone;
+
+    let address = '';
+    let city = '';
+    let ward = '';
+    let street = '';
+
+    if (currentRegion === 'vn') {
+        const citySelect = document.getElementById('customer-city');
+        const wardSelect = document.getElementById('customer-ward');
+        const streetInput = document.getElementById('customer-street');
+        city = citySelect ? citySelect.value.trim() : '';
+        ward = wardSelect ? wardSelect.value.trim() : '';
+        street = streetInput ? streetInput.value.trim() : '';
+
+        if (!city) {
+            alert('Vui lòng chọn Tỉnh / Thành phố nhận hàng!');
+            if (citySelect) citySelect.focus();
+            return;
+        }
+
+        if (!ward) {
+            alert('Vui lòng chọn Phường / Xã / Đặc khu nhận hàng!');
+            if (wardSelect) wardSelect.focus();
+            return;
+        }
+
+        if (!street) {
+            alert('Vui lòng nhập địa chỉ cụ thể (số nhà, tên đường...)!');
+            if (streetInput) streetInput.focus();
+            return;
+        }
+
+        address = [street, ward, city].filter(Boolean).join(', ');
+    } else {
+        const otherInput = document.getElementById('customer-other-address');
+        address = otherInput ? otherInput.value.trim() : '';
+        if (!address) {
+            alert('Bạn vui lòng nhập địa chỉ nhận hàng ở khu vực của bạn nhé!');
+            if (otherInput) otherInput.focus();
+            return;
+        }
+    }
+
+    let orderId = '#HT-' + Math.floor(1000 + Math.random() * 9000);
+    let now = new Date();
+    let orderDate = now.toLocaleString('vi-VN');
+    let orderTimestamp = now.getTime();
+
+    let fee = SHIPPING_FEES[currentShipping] || 0;
+    let grandTotal = drinkSubtotal + fee;
+    let grandTotalText = grandTotal.toLocaleString('vi-VN') + 'đ';
+    let shippingName = SHIPPING_NAMES[currentShipping] || 'Xe máy';
+
+    let itemsSummary = cart.map(i => `${i.name} (${i.variants || 'M'}) x${i.quantity || 1} [${i.toppings || 'None'}]`).join('\n');
+
+    let history = JSON.parse(localStorage.getItem('ht_history')) || [];
+    history.push({ 
+        orderId: orderId,
+        date: orderDate, 
+        timestamp: orderTimestamp,
+        name: name,
+        phone: phone,
+        address: address,
+        region: currentRegion,
+        city: city,
+        ward: ward,
+        street: street,
+        shippingMethod: currentShipping,
+        shippingName: shippingName,
+        shippingFee: fee,
+        drinkTotal: drinkSubtotal,
+        total: grandTotalText,
+        items: cart,
+        isConfirmed: false,
+        voucher: appliedVoucher ? appliedVoucher.code : null,
+        prepDurationOverride: appliedVoucher ? appliedVoucher.prepDuration : null
+    });
+    localStorage.setItem('ht_history', JSON.stringify(history));
+    // Ghi nhớ thông tin nhận hàng để tái sử dụng thông minh
+    if (typeof saveContactProfile === 'function') {
+        saveContactProfile(name, phone, currentRegion, city, ward, street, address);
+    }
+
+    // Gửi ngầm một chiều sang Google Sheets của quán
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxH8WScq0MbrkzyaiGIMtEyhqbStVWbPJw7-SiifOLsIRLihlp4hcHPBm7_9WDKf58B/exec';
+    try {
+        fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                date: orderDate,
+                orderId: orderId,
+                name: name,
+                phone: phone,
+                address: address,
+                shippingMethod: shippingName,
+                shippingFee: fee.toLocaleString('vi-VN') + 'đ',
+                itemsSummary: itemsSummary,
+                total: grandTotalText
+            })
+        }).catch(err => console.log('Google Sheets sync note:', err));
+    } catch (e) {
+        console.log('Google Sheets sync err:', e);
+    }
+
+    // Hiển thị thông báo đặt hàng thành công
+    let alertOrderIdEl = document.getElementById('alert-order-id');
+    if (alertOrderIdEl) alertOrderIdEl.innerText = `Mã đơn: ${orderId}`;
+
+    document.getElementById('checkout-alert').style.display = 'flex';
+    localStorage.removeItem('ht_cart');
+    loadCart(); if (typeof updateHeaderCartBadge === 'function') updateHeaderCartBadge(); 
+}
+
+function goToHistory() {
+    window.location.href = 'History.html';
+}
+
+function removeItem(index) {
+    let cart = JSON.parse(localStorage.getItem('ht_cart')) || [];
+    cart.splice(index, 1);
+    localStorage.setItem('ht_cart', JSON.stringify(cart));
+    loadCart(); if (typeof updateHeaderCartBadge === 'function') updateHeaderCartBadge();
+}
+
+
+// =========================================
+// HỆ THỐNG GHI NHỚ THÔNG TIN NHẬN HÀNG (AUTOCOMPLETE / DROPDOWN)
+// =========================================
+const SAVED_CONTACTS_KEY = 'ht_saved_contacts';
+
+// Lấy danh sách liên hệ đã lưu, tự động nạp từ lịch sử đơn hàng cũ nếu chưa có
+function getSavedContacts() {
+    let contacts = [];
+    try {
+        contacts = JSON.parse(localStorage.getItem(SAVED_CONTACTS_KEY)) || [];
+    } catch(e) {
+        contacts = [];
+    }
+
+    if (contacts.length === 0) {
+        try {
+            let history = JSON.parse(localStorage.getItem('ht_history')) || [];
+            history.forEach(order => {
+                let name = (order.name || '').trim();
+                let phone = (order.phone || '').trim();
+                let city = (order.city || '').trim();
+                let ward = (order.ward || '').trim();
+                let street = (order.street || '').trim();
+                let region = order.region || 'vn';
+
+                if (name || phone || street) {
+                    let exists = contacts.some(c => 
+                        c.name.toLowerCase() === name.toLowerCase() && 
+                        c.phone === phone && 
+                        (c.city || '') === city && 
+                        (c.ward || '') === ward && 
+                        (c.street || '') === street
+                    );
+                    if (!exists) {
+                        contacts.push({
+                            id: 'c_' + (order.orderId || Math.random()).toString().replace(/\D/g, ''),
+                            name: name,
+                            phone: phone,
+                            region: region,
+                            city: city,
+                            ward: ward,
+                            street: street,
+                            otherAddress: region !== 'vn' ? (order.address || '').trim() : '',
+                            timestamp: order.timestamp || Date.now()
+                        });
+                    }
+                }
+            });
+            if (contacts.length > 0) {
+                localStorage.setItem(SAVED_CONTACTS_KEY, JSON.stringify(contacts));
+            }
+        } catch(e) {}
+    }
+
+    return contacts;
+}
+
+// Lưu thông tin người nhận khi chốt đơn thành công
+function saveContactProfile(name, phone, region, city, ward, street, otherAddress) {
+    let contacts = getSavedContacts();
+    let cleanName = (name || '').trim();
+    let cleanPhone = (phone || '').trim();
+    let cleanCity = (city || '').trim();
+    let cleanWard = (ward || '').trim();
+    let cleanStreet = (street || '').trim();
+    let cleanOther = (otherAddress || '').trim();
+
+    if (!cleanName && !cleanPhone && !cleanStreet && !cleanOther) return;
+
+    let existingIndex = contacts.findIndex(c => 
+        c.name.toLowerCase() === cleanName.toLowerCase() &&
+        c.phone === cleanPhone &&
+        c.region === region &&
+        (c.city || '') === cleanCity &&
+        (c.ward || '') === cleanWard &&
+        (c.street || '') === cleanStreet &&
+        (c.otherAddress || '') === cleanOther
+    );
+
+    if (existingIndex >= 0) {
+        contacts[existingIndex].timestamp = Date.now();
+    } else {
+        contacts.unshift({
+            id: 'c_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+            name: cleanName,
+            phone: cleanPhone,
+            region: region,
+            city: cleanCity,
+            ward: cleanWard,
+            street: cleanStreet,
+            otherAddress: cleanOther,
+            timestamp: Date.now()
+        });
+    }
+
+    if (contacts.length > 30) contacts = contacts.slice(0, 30);
+    localStorage.setItem(SAVED_CONTACTS_KEY, JSON.stringify(contacts));
+}
+
+// Đóng toàn bộ các dropdown
+function closeAllDropdowns() {
+    document.querySelectorAll('.autocomplete-dropdown').forEach(d => {
+        d.classList.remove('show');
+        d.innerHTML = '';
+    });
+}
+
+// Xóa 1 Tên khỏi danh sách đã lưu
+function deleteSavedName(nameToDelete) {
+    let contacts = getSavedContacts();
+    contacts = contacts.filter(c => c.name !== nameToDelete);
+    localStorage.setItem(SAVED_CONTACTS_KEY, JSON.stringify(contacts));
+    showNameSuggestions();
+}
+
+// Xóa 1 SĐT khỏi danh sách đã lưu
+function deleteSavedPhone(phoneToDelete) {
+    let contacts = getSavedContacts();
+    contacts = contacts.filter(c => c.phone !== phoneToDelete);
+    localStorage.setItem(SAVED_CONTACTS_KEY, JSON.stringify(contacts));
+    showPhoneSuggestions();
+}
+
+// Xóa 1 Địa chỉ cụ thể khỏi danh sách (đúng theo Tỉnh/TP và Phường đã chọn)
+function deleteSavedStreet(streetToDelete, city, ward) {
+    let contacts = getSavedContacts();
+    contacts = contacts.filter(c => !(c.street === streetToDelete && (c.city || '') === city && (c.ward || '') === ward));
+    localStorage.setItem(SAVED_CONTACTS_KEY, JSON.stringify(contacts));
+    showStreetSuggestions();
+}
+
+// Xóa 1 Địa chỉ Khu vực khác khỏi danh sách
+function deleteSavedOtherAddress(otherToDelete) {
+    let contacts = getSavedContacts();
+    contacts = contacts.filter(c => c.otherAddress !== otherToDelete);
+    localStorage.setItem(SAVED_CONTACTS_KEY, JSON.stringify(contacts));
+    showOtherAddressSuggestions();
+}
+
+// Hiển thị gợi ý Tên (Luôn hiển thị khi click/focus)
+function showNameSuggestions() {
+    const input = document.getElementById('customer-name');
+    const dropdown = document.getElementById('dropdown-customer-name');
+    if (!input || !dropdown) return;
+
+    closeAllDropdowns();
+    let contacts = getSavedContacts();
+    let query = input.value.trim().toLowerCase();
+
+    let uniqueNames = [];
+    let seen = new Set();
+    contacts.forEach(c => {
+        let n = (c.name || '').trim();
+        if (n && !seen.has(n.toLowerCase())) {
+            seen.add(n.toLowerCase());
+            if (!query || n.toLowerCase().includes(query)) {
+                uniqueNames.push({ name: n, phone: c.phone || '' });
+            }
+        }
+    });
+
+    if (uniqueNames.length === 0) {
+        dropdown.classList.remove('show');
+        return;
+    }
+
+    let html = '';
+    uniqueNames.forEach(item => {
+        let escapedName = item.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        let escapedPhone = (item.phone || '').replace(/'/g, "\\'");
+        html += '<div class="autocomplete-item" onclick="selectSavedName(\'' + escapedName + '\', \'' + escapedPhone + '\')">' +
+            '<span class="autocomplete-item-text">' +
+                '<i class="fas fa-history" style="color: #ff6b35; font-size: 0.85em;"></i>' +
+                '<span>' + item.name + '</span>' +
+            '</span>' +
+            '<button type="button" class="autocomplete-item-delete" onclick="event.stopPropagation(); deleteSavedName(\'' + escapedName + '\')" title="Xóa gợi ý này">✕</button>' +
+        '</div>';
+    });
+
+    dropdown.innerHTML = html;
+    dropdown.classList.add('show');
+}
+
+function selectSavedName(name, phone) {
+    const nameInput = document.getElementById('customer-name');
+    const phoneInput = document.getElementById('customer-phone');
+    if (nameInput) nameInput.value = name;
+    if (phone && phoneInput && !phoneInput.value.trim()) {
+        phoneInput.value = phone;
+    }
+    closeAllDropdowns();
+}
+
+// Hiển thị gợi ý Số điện thoại (Luôn hiển thị khi click/focus)
+function showPhoneSuggestions() {
+    const input = document.getElementById('customer-phone');
+    const dropdown = document.getElementById('dropdown-customer-phone');
+    if (!input || !dropdown) return;
+
+    closeAllDropdowns();
+    let contacts = getSavedContacts();
+    let query = input.value.trim();
+
+    let uniquePhones = [];
+    let seen = new Set();
+    contacts.forEach(c => {
+        let p = (c.phone || '').trim();
+        if (p && !seen.has(p)) {
+            seen.add(p);
+            if (!query || p.includes(query)) {
+                uniquePhones.push(p);
+            }
+        }
+    });
+
+    if (uniquePhones.length === 0) {
+        dropdown.classList.remove('show');
+        return;
+    }
+
+    let html = '';
+    uniquePhones.forEach(phone => {
+        let escapedPhone = phone.replace(/'/g, "\\'");
+        html += '<div class="autocomplete-item" onclick="selectSavedPhone(\'' + escapedPhone + '\')">' +
+            '<span class="autocomplete-item-text">' +
+                '<i class="fas fa-phone-alt" style="color: #ff6b35; font-size: 0.85em;"></i>' +
+                '<span>' + phone + '</span>' +
+            '</span>' +
+            '<button type="button" class="autocomplete-item-delete" onclick="event.stopPropagation(); deleteSavedPhone(\'' + escapedPhone + '\')" title="Xóa gợi ý này">✕</button>' +
+        '</div>';
+    });
+
+    dropdown.innerHTML = html;
+    dropdown.classList.add('show');
+}
+
+function selectSavedPhone(phone) {
+    const phoneInput = document.getElementById('customer-phone');
+    if (phoneInput) phoneInput.value = phone;
+    closeAllDropdowns();
+}
+
+// Hiển thị gợi ý Địa chỉ cụ thể
+// QUY TẮC CỰC KỲ QUAN TRỌNG: CHỈ HIỂN THỊ KHI CHỌN CHÍNH XÁC TỈNH/TP VÀ PHƯỜNG ĐÃ TỪNG CHỌN
+function showStreetSuggestions() {
+    const input = document.getElementById('customer-street');
+    const dropdown = document.getElementById('dropdown-customer-street');
+    const citySelect = document.getElementById('customer-city');
+    const wardSelect = document.getElementById('customer-ward');
+    if (!input || !dropdown || !citySelect || !wardSelect) return;
+
+    closeAllDropdowns();
+
+    let city = citySelect.value.trim();
+    let ward = wardSelect.value.trim();
+
+    // Nếu chưa chọn Tỉnh hoặc chưa chọn Phường -> Tuyệt đối không hiển thị
+    if (!city || !ward) {
+        dropdown.classList.remove('show');
+        return;
+    }
+
+    let contacts = getSavedContacts();
+    let query = input.value.trim().toLowerCase();
+
+    // Lọc CHÍNH XÁC theo Tỉnh/TP và Phường đã chọn
+    let matchedContacts = contacts.filter(c => 
+        (c.city || '').trim() === city && 
+        (c.ward || '').trim() === ward && 
+        (c.street || '').trim()
+    );
+
+    let uniqueStreets = [];
+    let seen = new Set();
+    matchedContacts.forEach(c => {
+        let s = c.street.trim();
+        if (s && !seen.has(s.toLowerCase())) {
+            seen.add(s.toLowerCase());
+            if (!query || s.toLowerCase().includes(query)) {
+                uniqueStreets.push(s);
+            }
+        }
+    });
+
+    if (uniqueStreets.length === 0) {
+        dropdown.classList.remove('show');
+        return;
+    }
+
+    let escapedCity = city.replace(/'/g, "\\'");
+    let escapedWard = ward.replace(/'/g, "\\'");
+
+    let html = '';
+    uniqueStreets.forEach(street => {
+        let escapedStreet = street.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        html += '<div class="autocomplete-item" onclick="selectSavedStreet(\'' + escapedStreet + '\')">' +
+            '<span class="autocomplete-item-text">' +
+                '<i class="fas fa-map-marker-alt" style="color: #ff6b35; font-size: 0.85em;"></i>' +
+                '<span>' + street + '</span>' +
+            '</span>' +
+            '<button type="button" class="autocomplete-item-delete" onclick="event.stopPropagation(); deleteSavedStreet(\'' + escapedStreet + '\', \'' + escapedCity + '\', \'' + escapedWard + '\')" title="Xóa gợi ý này">✕</button>' +
+        '</div>';
+    });
+
+    dropdown.innerHTML = html;
+    dropdown.classList.add('show');
+}
+
+function selectSavedStreet(street) {
+    const streetInput = document.getElementById('customer-street');
+    if (streetInput) streetInput.value = street;
+    closeAllDropdowns();
+}
+
+// Hiển thị gợi ý Địa chỉ Khu vực khác
+function showOtherAddressSuggestions() {
+    const input = document.getElementById('customer-other-address');
+    const dropdown = document.getElementById('dropdown-customer-other-address');
+    if (!input || !dropdown) return;
+
+    closeAllDropdowns();
+    let contacts = getSavedContacts();
+    let query = input.value.trim().toLowerCase();
+
+    let uniqueOthers = [];
+    let seen = new Set();
+    contacts.forEach(c => {
+        let o = (c.otherAddress || '').trim();
+        if (o && !seen.has(o.toLowerCase())) {
+            seen.add(o.toLowerCase());
+            if (!query || o.toLowerCase().includes(query)) {
+                uniqueOthers.push(o);
+            }
+        }
+    });
+
+    if (uniqueOthers.length === 0) {
+        dropdown.classList.remove('show');
+        return;
+    }
+
+    let html = '';
+    uniqueOthers.forEach(addr => {
+        let escapedAddr = addr.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        html += '<div class="autocomplete-item" onclick="selectSavedOtherAddress(\'' + escapedAddr + '\')">' +
+            '<span class="autocomplete-item-text">' +
+                '<i class="fas fa-globe-americas" style="color: #ff6b35; font-size: 0.85em;"></i>' +
+                '<span>' + addr + '</span>' +
+            '</span>' +
+            '<button type="button" class="autocomplete-item-delete" onclick="event.stopPropagation(); deleteSavedOtherAddress(\'' + escapedAddr + '\')" title="Xóa gợi ý này">✕</button>' +
+        '</div>';
+    });
+
+    dropdown.innerHTML = html;
+    dropdown.classList.add('show');
+}
+
+function selectSavedOtherAddress(addr) {
+    const otherInput = document.getElementById('customer-other-address');
+    if (otherInput) otherInput.value = addr;
+    closeAllDropdowns();
+}
+
+// Khởi tạo các sự kiện lắng nghe khi trang sẵn sàng
+function initAutocompleteEvents() {
+    const nameInput = document.getElementById('customer-name');
+    const phoneInput = document.getElementById('customer-phone');
+    const streetInput = document.getElementById('customer-street');
+    const otherInput = document.getElementById('customer-other-address');
+
+    if (nameInput) {
+        nameInput.addEventListener('focus', showNameSuggestions);
+        nameInput.addEventListener('input', showNameSuggestions);
+        nameInput.addEventListener('click', function(e) {
+            e.stopPropagation();
+            showNameSuggestions();
+        });
+    }
+    if (phoneInput) {
+        phoneInput.addEventListener('focus', showPhoneSuggestions);
+        phoneInput.addEventListener('input', showPhoneSuggestions);
+        phoneInput.addEventListener('click', function(e) {
+            e.stopPropagation();
+            showPhoneSuggestions();
+        });
+    }
+    if (streetInput) {
+        streetInput.addEventListener('focus', showStreetSuggestions);
+        streetInput.addEventListener('input', showStreetSuggestions);
+        streetInput.addEventListener('click', function(e) {
+            e.stopPropagation();
+            showStreetSuggestions();
+        });
+    }
+    if (otherInput) {
+        otherInput.addEventListener('focus', showOtherAddressSuggestions);
+        otherInput.addEventListener('input', showOtherAddressSuggestions);
+        otherInput.addEventListener('click', function(e) {
+            e.stopPropagation();
+            showOtherAddressSuggestions();
+        });
+    }
+
+    // Đóng dropdown khi click ra ngoài
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.tray-input-wrapper')) {
+            closeAllDropdowns();
+        }
+    });
+
+    // Đóng dropdown khi nhấn Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeAllDropdowns();
+        }
+    });
+}
+
+window.onload = loadCart;
+</script>
+
+    <section class="bottom-cta tray-checkout">
+         <div id="tray-action-container" style="text-align: center; margin-top: 20px;">
+        <button onclick="checkoutOrder()" class="quick-order-banner" style="border: none; cursor: pointer; font-size: 1.2em; padding: 15px 40px;">CHỐT ĐƠN NGAY</button>
+		</div>
+    </section>
+	
+	<div id="checkout-alert" class="alert-overlay">
+    <div class="alert-box">
+        <img src="Ts-img/logo.png" alt="H&T Logo" class="alert-logo">
+		<p style="font-size: 1.25em; font-weight: bold; color: #d25d19; margin-bottom: 6px;">Đặt hàng thành công !!</p>
+        <p id="alert-order-id" style="font-size: 1.15em; font-weight: bold; color: #ff6b35; margin: 4px 0 10px;"></p>
+        <p style="font-size: 0.95em; color: #555; line-height: 1.5; margin-bottom: 20px;">Đơn hàng đã được gửi đến quầy pha chế & lưu vào "Lịch sử Đơn hàng" của bạn.</p>
+        <button class="alert-btn" onclick="goToHistory()">Xem lịch sử ngay</button>
+    </div>
+	</div>
+	
+	<footer class="ht-footer">
+    <div class="footer-container">
+        <h1>H&T Trà sữa</h1>
+        <p>Địa chỉ: 123 Đường Lê Lợi, TP. Vũng Tàu</p>
+        <p>Email: lienhe@ht-trasua.com | Hotline: 09xx.xxx.xxx</p>
+        
+        <div class="footer-social">
+            <p>Kết nối với chúng mình:</p>
+            <div class="social-icons">
+                <a href="#" class="icon-link"><i class="fab fa-facebook"></i></a>
+                <a href="#" class="icon-link"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="icon-link"><i class="fab fa-facebook-messenger"></i></a>
+                <a href="#" class="icon-link"><i class="fab fa-tiktok"></i></a>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <a href="Terms.html">Điều khoản</a> | <a href="Privacy.html">Chính sách bảo mật</a>
+        </div>
+        
+        <hr class="footer-divider">
+        
+        <p class="copyright">© 2026 H&T Trà sữa. Thiết kế và Phát triển bởi: Trần Thái Hoài | Hỗ trợ giai đoạn đầu: Ngọc Thúy. All rights reserved.</p>
+    </div>
+	</footer>
+
+    <script>
+    function updateHeaderCartBadge() {
+        try {
+            let cart = JSON.parse(localStorage.getItem('ht_cart')) || [];
+            let total = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+            let badges = document.querySelectorAll('.header-cart-badge');
+            badges.forEach(b => {
+                if (total > 0) {
+                    b.textContent = total;
+                    b.style.display = 'inline-block';
+                } else {
+                    b.style.display = 'none';
+                }
+            });
+        } catch(e) {}
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', updateHeaderCartBadge);
+    } else {
+        updateHeaderCartBadge();
+    }
+    </script>
+</body>
+</html>

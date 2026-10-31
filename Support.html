@@ -1,0 +1,124 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H&T Milk Tea - Hỗ trợ Khách hàng</title>
+    <link rel="icon" type="image/png" href="Ts-img/logo.png">
+    <link rel="stylesheet" href="style1.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <header class="main-header">
+    <nav class="nav-left">
+        <a href="Menu.html">Menu</a>
+        <a href="History.html">Lịch sử<span class="nav-long-text"> Đơn hàng</span></a>
+    </nav>
+
+    <a href="index.html" class="logo-center">
+        <img src="Ts-img/logo.png" alt="H&T Logo" class="header-logo">
+        <h1>H<span class="highlight">&</span>T</h1>
+    </a>
+
+    <nav class="nav-right">
+        <a href="Tray.html">Khay<span class="header-cart-badge" style="display:none;"></span></a>
+        <a href="Support.html" class="active">Hỗ trợ</a>
+    </nav>
+	</header>
+
+    <section class="hero-banner-sp">
+        <div class="hero-content">
+            
+            <img src="Ts-img/logo.png" alt="H&T Logo Nhỏ" class="hero-logo">
+
+            <div class="introduction-text">
+                <h2>TRUNG TÂM HỖ TRỢ</h2>
+                <p>Bạn cần giúp đỡ? Đừng lo, <span class="highlight">H&T</span> luôn ở đây để lắng nghe, hướng dẫn và giải quyết mọi vấn đề của bạn!</p>
+            </div>
+			
+        </div>
+    </section>
+
+    <section class="brand-section">
+        
+        <div class="brand-item">
+            <h3>Hướng dẫn đặt hàng siêu dễ</h3>
+            <p>Nếu đây là lần đầu bạn ghé thăm nhà H&T, hãy làm theo 3 bước nho nhỏ này để có ngay ly trà ngon nhé:</p>
+            <ul style="text-align: left; padding-left: 20px; line-height: 1.8;">
+                <li><strong>Bước 1:</strong> Ghé qua trang <em>Menu</em>, nhấp vào món trà bạn ưng ý. Đừng quên chọn thêm Up size hoặc Topping tùy sở thích nha.</li>
+                <li><strong>Bước 2:</strong> Bấm thêm món vào <em>Tray</em> (Khay hàng của bạn).</li>
+                <li><strong>Bước 3:</strong> Vào <em>Tray</em> để kiểm tra lại các món đã chọn. Sau đó chốt đơn và nhắn ngay cho chúng mình qua Fanpage/Zalo để được giao hàng tận nơi!</li>
+            </ul>
+        </div>
+
+        <div class="brand-item">
+            <h3>Mạng xã hội & Fanpage</h3>
+            <p>Hiện tại chúng mình không sử dụng tổng đài điện thoại. Mọi đơn hàng, tư vấn món ngon hay thắc mắc, bạn cứ nhắn tin trực tiếp qua Fanpage Facebook, Instagram hoặc Zalo OA của H&T nhé. Các admin thân thiện của chúng mình luôn túc trực để trò chuyện cùng bạn!</p>
+        </div>
+
+        <div class="brand-item">
+            <h3>Góp ý & Nhắn gửi</h3>
+            <p>Những đóng góp của bạn là động lực to lớn giúp H&T ngày càng hoàn thiện hơn. Bạn có thể gửi email phản hồi, góp ý hoặc chia sẻ những trải nghiệm đáng nhớ cùng chúng mình qua địa chỉ: <strong>cskh@htmilktea.vn</strong>. Chúng mình cam kết sẽ đọc kỹ và trân trọng mọi ý kiến!</p>
+        </div>
+
+    </section>
+	
+	<section class="bottom-cta">
+		<a href="Menu.html" class="quick-order-banner">
+			Về lại Menu nhé
+		</a>
+	</section>
+
+    <a href="Menu.html" class="floating-menu-btn">XEM<br>MENU</a>
+	
+	<footer class="ht-footer">
+    <div class="footer-container">
+        <h1>H&T Trà sữa</h1>
+        <p>Địa chỉ: 123 Đường Lê Lợi, TP. Vũng Tàu</p>
+        <p>Email: lienhe@ht-trasua.com | Hotline: 09xx.xxx.xxx</p>
+        
+        <div class="footer-social">
+            <p>Kết nối với chúng mình:</p>
+            <div class="social-icons">
+                <a href="#" class="icon-link"><i class="fab fa-facebook"></i></a>
+                <a href="#" class="icon-link"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="icon-link"><i class="fab fa-facebook-messenger"></i></a>
+                <a href="#" class="icon-link"><i class="fab fa-tiktok"></i></a>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <a href="Terms.html">Điều khoản</a> | <a href="Privacy.html">Chính sách bảo mật</a>
+        </div>
+        
+        <hr class="footer-divider">
+        
+        <p class="copyright">© 2026 H&T Trà sữa. Thiết kế và Phát triển bởi: Trần Thái Hoài | Hỗ trợ giai đoạn đầu: Ngọc Thúy. All rights reserved.</p>
+    </div>
+	</footer>
+
+    <script>
+    function updateHeaderCartBadge() {
+        try {
+            let cart = JSON.parse(localStorage.getItem('ht_cart')) || [];
+            let total = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+            let badges = document.querySelectorAll('.header-cart-badge');
+            badges.forEach(b => {
+                if (total > 0) {
+                    b.textContent = total;
+                    b.style.display = 'inline-block';
+                } else {
+                    b.style.display = 'none';
+                }
+            });
+        } catch(e) {}
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', updateHeaderCartBadge);
+    } else {
+        updateHeaderCartBadge();
+    }
+    </script>
+</body>
+</html>

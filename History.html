@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H&T Milk Tea - Lịch sử Đơn hàng</title>
+    <link rel="icon" type="image/png" href="Ts-img/logo.png">
+    <link rel="stylesheet" href="style1.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="product-info-page">
+
+    <header class="main-header">
+        <nav class="nav-left">
+            <a href="Menu.html">Menu</a>
+			<a href="History.html" class="active">Lịch sử<span class="nav-long-text"> Đơn hàng</span></a>
+        </nav>
+
+        <a href="index.html" class="logo-center">
+            <img src="Ts-img/logo.png" alt="H&T Logo" class="header-logo">
+            <h1>H<span class="highlight">&</span>T</h1>
+        </a>
+
+        <nav class="nav-right">
+            <a href="Tray.html">Khay<span class="header-cart-badge" style="display:none;"></span></a>
+            <a href="Support.html">Hỗ trợ</a>
+        </nav>
+    </header>
+
+    <section class="brand-section tray-section">
+        <nav class="tray-header">
+            <h2>Lịch sử<span class="nav-long-text"> Đơn hàng</span></h2>
+            <p>Những hương vị mà bạn đã từng trải nghiệm cùng chúng mình!</p>
+            <div id="clear-history-container" style="text-align: center; margin-top: 15px;"></div>
+        </nav>
+
+        <div id="history-items-container"></div>
+    </section>
+
+    <script>
+        // Các hàm phụ trợ thông tin phương tiện
+        function getShipIcon(method) {
+            if (method === 'drone') return '🛸';
+            if (method === 'heli') return '🚁';
+            if (method === 'jet') return '✈️';
+            if (method === 'portal') return '🌀';
+            return '🛵';
+        }
+
+        function getShipName(order) {
+            if (order.shippingName) return order.shippingName;
+            let m = order.shippingMethod;
+            if (m === 'drone') return 'Drone phản lực H&T';
+            if (m === 'heli') return 'Trực thăng cá nhân H&T Air Copter';
+            if (m === 'jet') return 'Phi cơ tư nhân H&T (Private Jet)';
+            if (m === 'portal') return 'Kẻ dịch chuyển không gian';
+            return 'Giao hàng Xe máy (Shipper)';
+        }
+
+        function getShipFee(order) {
+            if (typeof order.shippingFee === 'number') return order.shippingFee;
+            let m = order.shippingMethod;
+            if (m === 'drone') return 280000;
+            if (m === 'heli') return 1500000;
+            if (m === 'jet') return 18000000;
+            if (m === 'portal') return 85000000;
+            return 16000;
+        }
+
+        function getShipFeeText(order) {
+            return getShipFee(order).toLocaleString('vi-VN') + 'đ';
+        }
+
+        function formatTimeRemaining(seconds) {
+            let mins = Math.max(1, Math.ceil(seconds / 60));
+            return `~${mins}p`;
+
+
+
+        }
+
+        // Tính thời gian pha chế chuẩn xác: Ly đầu tiên 3 phút (180s), từ ly thứ 2 trở đi mỗi ly +1p30s (90s), giờ cao điểm +3p (180s)
+        // Ngoại lệ: Nếu có mã ưu đãi FASTBAR -> Giảm thời gian pha chế xuống còn 10s!
+        function calculatePrepDuration(order) {
+            if (order.voucher === 'FASTBAR' || order.prepDurationOverride === 10) {
+                return 10;
+            }
+
+            let totalCups = (order.items || []).reduce((sum, item) => sum + (item.quantity || 1), 0);
+            let orderDate = new Date(order.timestamp || Date.now());
+            let timeInMinutes = orderDate.getHours() * 60 + orderDate.getMinutes();
+
+            let isPeak = (timeInMinutes >= 660 && timeInMinutes <= 780) || (timeInMinutes >= 1110 && timeInMinutes <= 1260);
+            let peakExtraSeconds = isPeak ? 60 : 0;
+
+            let extraCups = Math.max(0, totalCups - 1);
+            let cupExtraSeconds = extraCups * 60;
+
+            return 180 + cupExtraSeconds + peakExtraSeconds;
+        }
+
+        // Kiểm tra điều kiện đơn hàng giao tại Phường Bà Rịa hoặc Phường Vũng Tàu
+        function isVungTauBaRiaFastZone(order) {
+            let ward = (order.ward || '').trim();
+            let addr = (order.address || '');
+            return ward === 'Phường Vũng Tàu' || ward === 'Phường Bà Rịa' || 
+                   addr.includes('Phường Vũng Tàu') || addr.includes('Phường Bà Rịa');
+        }
+
+        // Tính thời gian di chuyển chuẩn xác theo từng phương tiện
+        // Nếu địa chỉ là "Phường Bà Rịa" hoặc "Phường Vũng Tàu": Giảm 70% thời gian ship (chỉ còn 30% thời gian gốc)
+        function calculateDeliveryDuration(order) {
+            let method = order.shippingMethod || 'bike';
+            let baseSeconds = 600; // 10 phút xe máy mặc định
+            switch (method) {
+                case 'portal': baseSeconds = 20; break;  // 20s cho dịch chuyển
+                case 'heli':   baseSeconds = 120; break; // 2 phút trực thăng
+                case 'drone':  baseSeconds = 210; break; // 3.5 phút drone
+                case 'jet':    baseSeconds = 480; break; // 8 phút phi cơ tư nhân H&T
+                case 'bike':
+                default:       baseSeconds = 600; break; // 10 phút xe máy
+            }
+
+            if (isVungTauBaRiaFastZone(order)) {
+                // Giảm 70% thời gian ship (còn lại 30% thời gian gốc)
+                return Math.max(10, Math.round(baseSeconds * 0.3));
+            }
+
+            return baseSeconds;
+        }
+
+        // Sinh 10 trọng số thời gian ngẫu nhiên máy (seeded theo orderId + timestamp)
+        // Đảm bảo tổng trọng số đúng bằng 10 => Tổng thời gian di chuyển D tuyệt đối không đổi!
+        function getDeliverySpeedSegments(order) {
+            let seedStr = (order.orderId || '') + '_' + (order.timestamp || '123456');
+            let seed = 0;
+            for (let i = 0; i < seedStr.length; i++) {
+                seed = ((seed << 5) - seed + seedStr.charCodeAt(i)) & 0xffffffff;
+            }
+            
+            function seededRandom() {
+                seed = (seed * 9301 + 49297) % 233280;
+                return seed / 233280;
+            }
+
+            // 10 trọng số thô mô phỏng: 0.45 (đường thoáng tăng tốc) đến 1.75 (đèn đỏ / kẹt xe)
+            let weights = [];
+            let sum = 0;
+            for (let i = 0; i < 10; i++) {
+                let w = 0.45 + seededRandom() * 1.30;
+                weights.push(w);
+                sum += w;
+            }
+
+            // Chuẩn hóa để tổng trọng số chính xác = 10
+            return weights.map(w => (w / sum) * 10);
+        }
+
+        // Tính vị trí % di chuyển liên tục, mượt mà qua 10 chặng tốc độ khác nhau
+        function getOrderDeliveryProgress(order, elapsed, totalDuration) {
+            if (elapsed <= 0) return { pos: 0, segmentIndex: 0, segmentWeight: 1 };
+            if (elapsed >= totalDuration) return { pos: 100, segmentIndex: 9, segmentWeight: 1 };
+
+            let normWeights = getDeliverySpeedSegments(order);
+            let cumulative = 0;
+            
+            for (let i = 0; i < 10; i++) {
+                let segDuration = totalDuration * (normWeights[i] / 10);
+                if (elapsed <= cumulative + segDuration || i === 9) {
+                    let segElapsed = elapsed - cumulative;
+                    let frac = Math.max(0, Math.min(1, segElapsed / segDuration));
+                    let pos = (i * 10) + (frac * 10);
+                    return {
+                        pos: Math.min(100, Math.max(0, pos)),
+                        segmentIndex: i,
+                        segmentWeight: normWeights[i]
+                    };
+                }
+                cumulative += segDuration;
+            }
+
+            return { pos: 100, segmentIndex: 9, segmentWeight: 1 };
+        }
+
+        // Câu trạng thái thời gian thực phản ánh tình hình giao thông (đèn đỏ, đường thoáng, kẹt xe...)
+        function getRealisticDeliveryStatus(method, segmentIndex, segmentWeight, pos, isFastZone) {
+            let zonePrefix = isFastZone ? '[Tuyến Vũng Tàu / Bà Rịa] ' : '';
+
+            if (pos >= 92) {
+                return `${zonePrefix}Phương tiện đã đến trước địa chỉ nhận, chuẩn bị giao hàng!`;
+            }
+            if (pos >= 80) {
+                return `${zonePrefix}Phương tiện đã rẽ vào khu vực gần nhà bạn...`;
+            }
+
+            if (method === 'bike') {
+                if (segmentWeight >= 1.3) {
+                    return `${zonePrefix}Shipper chắc đang dừng chờ đèn đỏ tại giao lộ...`;
+                } else if (segmentWeight >= 1.1) {
+                    return `${zonePrefix}Shipper chắc đang qua đoạn đường đông người, giảm tốc độ an toàn...`;
+                } else if (segmentWeight <= 0.75) {
+                    return `${zonePrefix}Chắc Đường rộng thông thoáng, Shipper đang lướt nhanh giao tới bạn!`;
+                } else {
+                    return `${zonePrefix}Chắc Shipper đang duy trì tốc độ ổn định trên lộ trình...`;
+                }
+            } else if (method === 'drone') {
+                if (segmentWeight >= 1.3) {
+                    return `${zonePrefix}Drone đang né luồng gió mạnh và giảm tốc khi qua cụm nhà cao tầng...`;
+                } else if (segmentWeight <= 0.75) {
+                    return `${zonePrefix}Thời tiết thuận lợi, Drone đang tăng tốc đường chim bay thẳng tiến!`;
+                } else {
+                    return `${zonePrefix}Drone phản lực đang bay ổn định ở độ cao chuẩn...`;
+                }
+            } else if (method === 'heli') {
+                if (segmentWeight >= 1.3) {
+                    return `${zonePrefix}Trực thăng đang điều chỉnh độ cao qua trạm kiểm soát không lưu...`;
+                } else if (segmentWeight <= 0.75) {
+                    return `${zonePrefix}Không phận thông suốt, Trực thăng xé gió lao nhanh!`;
+                } else {
+                    return `${zonePrefix}Trực thăng cá nhân H&T Air Copter đang bay siêu tốc hướng về địa chỉ...`;
+                }
+            } else if (method === 'jet') {
+                if (segmentWeight >= 1.3) {
+                    return `${zonePrefix}Phi cơ đang chuyển hướng qua hành lang không lưu trung chuyển...`;
+                } else if (segmentWeight <= 0.75) {
+                    return `${zonePrefix}Phi cơ đạt trần bay phản lực, lướt gió với tốc độ tối đa!`;
+                } else {
+                    return `${zonePrefix}Phi cơ tư nhân H&T đang bay thẳng xuyên lục địa...`;
+                }
+            }
+
+            return `${zonePrefix}Phương tiện đang di chuyển trên đường giao đến bạn...`;
+        }
+
+        // Hiển thị thời gian ước tính pha chế (khoảng ~3p, khi <= 20s báo "Sắp xong...")
+        function getApproxPrepText(prepDuration, remaining) {
+            if (remaining <= 20) {
+                return 'Sắp xong...';
+            }
+            if (prepDuration <= 60) {
+                return `~${prepDuration}s`;
+            }
+            let mins = Math.floor(prepDuration / 60);
+            let secs = prepDuration % 60;
+            if (secs === 0) return `~${mins}p`;
+            if (secs === 30) return `~${mins}p30s`;
+            return `~${Math.round(prepDuration / 60)}p`;
+        }
+
+        // Cập nhật tiến trình tuần tự mượt mà: Đang pha (~3p, <=20s: sắp xong) -> Đóng gói (15s) -> Giao hàng
+        function updateLiveTracking() {
+            let history = JSON.parse(localStorage.getItem('ht_history')) || [];
+            let now = Date.now();
+
+            for (let i = history.length - 1; i >= 0; i--) {
+                let order = history[i];
+                let orderIndex = i;
+
+                let prepDuration = calculatePrepDuration(order);
+                let packDuration = 15; // 15 giây đóng gói
+                let deliveryDuration = calculateDeliveryDuration(order);
+                let totalDuration = prepDuration + packDuration + deliveryDuration;
+
+                let orderTimestamp = order.timestamp || now;
+                let elapsed = Math.max(0, (now - orderTimestamp) / 1000);
+
+                let badgeEl = document.getElementById(`order-badge-${orderIndex}`);
+                let shakerAreaEl = document.getElementById(`order-shaker-area-${orderIndex}`);
+                let shakerIconEl = document.getElementById(`order-shaker-icon-${orderIndex}`);
+                let shakerTitleEl = document.getElementById(`order-shaker-title-${orderIndex}`);
+                let shakerNoteEl = document.getElementById(`order-shaker-note-${orderIndex}`);
+                let shakerDoneEl = document.getElementById(`order-shaker-done-${orderIndex}`);
+
+                let journeyAreaEl = document.getElementById(`order-journey-area-${orderIndex}`);
+                let journeyFillEl = document.getElementById(`order-journey-fill-${orderIndex}`);
+                let journeyFillP2El = document.getElementById(`order-journey-fill-p2-${orderIndex}`);
+                let portal1El = document.getElementById(`order-portal-1-${orderIndex}`);
+                let portal2El = document.getElementById(`order-portal-2-${orderIndex}`);
+                let journeyMarkerEl = document.getElementById(`order-journey-marker-${orderIndex}`);
+                let journeyNoteEl = document.getElementById(`order-journey-note-${orderIndex}`);
+
+                let confirmBoxEl = document.getElementById(`order-confirm-box-${orderIndex}`);
+                let closedBoxEl = document.getElementById(`order-closed-box-${orderIndex}`);
+
+                if (!badgeEl) continue;
+
+                let isPortal = (order.shippingMethod === 'portal');
+                let isFastBar = (order.voucher === 'FASTBAR' || order.prepDurationOverride === 10);
+
+                if (elapsed < prepDuration) {
+                    // GIAI ĐOẠN 1: ĐANG PHA CHẾ (Không thanh tiến trình, hiển thị ~3p và "Sắp xong..." khi <= 20s)
+                    let remaining = Math.ceil(prepDuration - elapsed);
+
+                    badgeEl.className = 'status-badge prep';
+                    badgeEl.innerHTML = '<span class="status-pulse-dot"></span><span>Đang pha chế</span>';
+
+                    if (shakerAreaEl) shakerAreaEl.style.display = 'flex';
+                    if (shakerIconEl) {
+                        shakerIconEl.innerText = '🍸';
+                        shakerIconEl.className = 'shaker-icon-box';
+                    }
+                    if (shakerTitleEl) {
+                        shakerTitleEl.innerText = isFastBar 
+                            ? '⚡ Barista đang pha chế thần tốc (Ưu đãi FASTBAR)' 
+                            : 'Barista đang đập đá và pha chế';
+                    }
+                    if (shakerNoteEl) {
+                        shakerNoteEl.innerHTML = `Thời gian ước tính: <strong>${getApproxPrepText(prepDuration, remaining)}</strong>`;
+                    }
+
+                    if (shakerDoneEl) shakerDoneEl.style.display = 'none';
+                    if (journeyAreaEl) journeyAreaEl.style.display = 'none';
+                    if (portal1El) portal1El.classList.remove('active');
+                    if (portal2El) portal2El.classList.remove('active');
+                    if (journeyFillP2El) journeyFillP2El.style.display = 'none';
+
+                    if (confirmBoxEl) confirmBoxEl.style.display = 'none';
+                    if (closedBoxEl) closedBoxEl.style.display = 'none';
+
+                } else if (elapsed < prepDuration + packDuration) {
+                    // GIAI ĐOẠN 2: ĐANG ĐÓNG GÓI (15 giây)
+                    let packElapsed = elapsed - prepDuration;
+                    let packRemaining = Math.ceil(packDuration - packElapsed);
+
+                    badgeEl.className = 'status-badge packing';
+                    badgeEl.innerHTML = '<span class="status-pulse-dot"></span><span>Đang đóng gói</span>';
+
+                    if (shakerAreaEl) shakerAreaEl.style.display = 'flex';
+                    if (shakerIconEl) {
+                        shakerIconEl.innerText = '🛍️';
+                        shakerIconEl.className = 'shaker-icon-box packing';
+                    }
+                    if (shakerTitleEl) {
+                        shakerTitleEl.innerText = 'Nhân viên đang đóng gói đồ uống';
+                    }
+                    if (shakerNoteEl) {
+                        let packNote = packRemaining <= 3 
+                            ? 'Đóng gói sắp hoàn tất, chuẩn bị giao...' 
+                            : `Đang dán seal nắp ly và đóng túi cẩn thận... (~${packRemaining}s)`;
+                        shakerNoteEl.innerHTML = packNote;
+                    }
+
+                    if (shakerDoneEl) shakerDoneEl.style.display = 'none';
+                    if (journeyAreaEl) journeyAreaEl.style.display = 'none';
+                    if (portal1El) portal1El.classList.remove('active');
+                    if (portal2El) portal2El.classList.remove('active');
+                    if (journeyFillP2El) journeyFillP2El.style.display = 'none';
+
+                    if (confirmBoxEl) confirmBoxEl.style.display = 'none';
+                    if (closedBoxEl) closedBoxEl.style.display = 'none';
+
+                } else if (elapsed < totalDuration) {
+                    // GIAI ĐOẠN 3: ĐANG GIAO HÀNG (Pha xong + Đóng gói xong -> Bắt đầu chạy tiến trình ship)
+                    let deliveryElapsed = elapsed - (prepDuration + packDuration);
+                    let remaining = Math.ceil(totalDuration - elapsed);
+
+                    badgeEl.className = 'status-badge delivering';
+                    badgeEl.innerHTML = '<span class="status-pulse-dot"></span><span>Đang giao hàng</span>';
+
+                    if (shakerAreaEl) shakerAreaEl.style.display = 'none';
+                    if (shakerDoneEl) {
+                        shakerDoneEl.style.display = 'flex';
+                        shakerDoneEl.innerHTML = `<span>✓</span> <span>Hoàn tất pha chế & đóng gói</span>`;
+                    }
+
+                    if (journeyAreaEl) journeyAreaEl.style.display = 'block';
+
+                    if (isPortal) {
+                        // Kẻ dịch chuyển không gian (20s)
+                        if (journeyMarkerEl) {
+                            journeyMarkerEl.innerText = '🥤';
+                            journeyMarkerEl.classList.remove('vehicle-bike');
+                        }
+                        if (portal1El) portal1El.style.display = 'block';
+                        if (portal2El) portal2El.style.display = 'block';
+                        if (journeyFillP2El) journeyFillP2El.style.display = 'block';
+
+                        let t = Math.max(0, Math.min(20, deliveryElapsed));
+                        let pos = 0;
+
+                        if (t <= 10) {
+                            pos = (t / 10) * 20;
+                            if (journeyFillEl) journeyFillEl.style.width = pos.toFixed(2) + '%';
+                            if (journeyFillP2El) journeyFillP2El.style.width = '0%';
+
+                            if (pos >= 10) {
+                                if (portal1El) portal1El.classList.add('active');
+                            } else {
+                                if (portal1El) portal1El.classList.remove('active');
+                            }
+
+                            if (pos >= 15) {
+                                if (portal2El) portal2El.classList.add('active');
+                            } else {
+                                if (portal2El) portal2El.classList.remove('active');
+                            }
+
+                            if (journeyMarkerEl) journeyMarkerEl.style.left = pos.toFixed(2) + '%';
+
+                        } else {
+                            pos = 80 + ((t - 10) / 10) * 20;
+
+                            if (journeyFillEl) journeyFillEl.style.width = '20%';
+                            if (journeyFillP2El) {
+                                journeyFillP2El.style.left = '80%';
+                                journeyFillP2El.style.width = (pos - 80).toFixed(2) + '%';
+                            }
+
+                            if (portal1El) portal1El.classList.add('active');
+                            if (portal2El) portal2El.classList.add('active');
+
+                            if (journeyMarkerEl) {
+                                let curLeft = parseFloat(journeyMarkerEl.style.left) || 0;
+                                if (curLeft < 75 && pos >= 80) {
+                                    journeyMarkerEl.style.transition = 'none';
+                                    journeyMarkerEl.style.left = pos.toFixed(2) + '%';
+                                    void journeyMarkerEl.offsetWidth;
+                                    journeyMarkerEl.style.transition = 'left 0.15s linear';
+                                } else {
+                                    journeyMarkerEl.style.left = pos.toFixed(2) + '%';
+                                }
+                            }
+                        }
+
+                        let statusText = 'Ly nước đang chuẩn bị xuất phát...';
+                        if (t >= 5 && t < 7.5) statusText = 'Cổng dịch chuyển 1 đã mở tại điểm 20%! Ly nước đang tiến vào...';
+                        else if (t >= 7.5 && t < 10) statusText = 'Cổng dịch chuyển 2 đã mở tại điểm 80%! Chuẩn bị nhảy vọt không gian...';
+                        else if (t >= 10 && t < 19) statusText = 'Đã xé toạc không-thời gian! Ly nước vừa bước ra từ cổng 80% và đang tiến về đích...';
+                        else if (t >= 19) statusText = 'Ly nước đã xuất hiện ngay trên bàn của bạn!';
+
+                        if (journeyNoteEl) {
+                            journeyNoteEl.innerHTML = `
+                                Phương thức: <strong>🌀 ${getShipName(order)}</strong> | Cước phí: <strong>${getShipFeeText(order)}</strong><br>
+                                <span style="color: #0284c7; font-size: 0.9em; font-weight: 600;">🥤 ${statusText} (${formatTimeRemaining(remaining)})</span>
+                            `;
+                        }
+
+                    } else {
+                        // Phương tiện thường (Xe máy, Drone, Trực thăng, Phi cơ tư nhân)
+                        // Áp dụng thuật toán 10 chặng tốc độ ngẫu nhiên máy (đèn đỏ, kẹt xe, đường thoáng...)
+                        let isFastZone = isVungTauBaRiaFastZone(order);
+                        let prog = getOrderDeliveryProgress(order, deliveryElapsed, deliveryDuration);
+                        let percent = prog.pos;
+
+                        if (portal1El) portal1El.style.display = 'none';
+                        if (portal2El) portal2El.style.display = 'none';
+                        if (journeyFillP2El) journeyFillP2El.style.display = 'none';
+
+                        if (journeyFillEl) journeyFillEl.style.width = percent.toFixed(2) + '%';
+                        if (journeyMarkerEl) {
+                            journeyMarkerEl.innerText = getShipIcon(order.shippingMethod);
+                            journeyMarkerEl.style.left = percent.toFixed(2) + '%';
+                            if (!order.shippingMethod || order.shippingMethod === 'bike') {
+                                journeyMarkerEl.classList.add('vehicle-bike');
+                            } else {
+                                journeyMarkerEl.classList.remove('vehicle-bike');
+                            }
+                        }
+
+                        let statusText = getRealisticDeliveryStatus(order.shippingMethod, prog.segmentIndex, prog.segmentWeight, percent, isFastZone);
+
+                        if (journeyNoteEl) {
+                            journeyNoteEl.innerHTML = `
+                                Phương thức: <strong>${getShipIcon(order.shippingMethod)} ${getShipName(order)}</strong> | Cước phí: <strong>${getShipFeeText(order)}</strong>${fastZoneTag}<br>
+                                <span style="color: #0284c7; font-size: 0.9em; font-weight: 600;">${getShipIcon(order.shippingMethod)} ${statusText} (${formatTimeRemaining(remaining)})</span>
+                            `;
+                        }
+                    }
+
+                    if (confirmBoxEl) confirmBoxEl.style.display = 'none';
+                    if (closedBoxEl) closedBoxEl.style.display = 'none';
+
+                } else {
+                    // Ship đã hoàn tất (elapsed >= totalDuration)
+                    if (portal1El) portal1El.classList.remove('active');
+                    if (portal2El) portal2El.classList.remove('active');
+
+                    if (isPortal) {
+                        if (journeyMarkerEl) {
+                            journeyMarkerEl.innerText = '🥤';
+                            journeyMarkerEl.classList.remove('vehicle-bike');
+                        }
+                        if (journeyFillEl) journeyFillEl.style.width = '20%';
+                        if (journeyFillP2El) {
+                            journeyFillP2El.style.display = 'block';
+                            journeyFillP2El.style.left = '80%';
+                            journeyFillP2El.style.width = '20%';
+                        }
+                        if (journeyMarkerEl) journeyMarkerEl.style.left = '100%';
+                    } else {
+                        if (journeyFillEl) journeyFillEl.style.width = '100%';
+                        if (journeyMarkerEl) {
+                            journeyMarkerEl.innerText = getShipIcon(order.shippingMethod);
+                            journeyMarkerEl.style.left = '100%';
+                            if (!order.shippingMethod || order.shippingMethod === 'bike') {
+                                journeyMarkerEl.classList.add('vehicle-bike');
+                            } else {
+                                journeyMarkerEl.classList.remove('vehicle-bike');
+                            }
+                        }
+                        if (journeyFillP2El) journeyFillP2El.style.display = 'none';
+                    }
+
+                    // Kiểm tra cơ chế xác nhận: Chỉ đóng đơn khi khách ấn vào xác nhận
+                    if (!order.isConfirmed) {
+                        // GIAI ĐOẠN 4: ĐÃ GIAO ĐẾN NƠI - CHỜ KHÁCH BẤM XÁC NHẬN ĐỂ ĐÓNG ĐƠN
+                        badgeEl.className = 'status-badge awaiting';
+                        badgeEl.innerHTML = '<span class="status-pulse-dot"></span><span>Đã đến nơi • Chờ xác nhận</span>';
+
+                        if (shakerAreaEl) shakerAreaEl.style.display = 'none';
+                        if (shakerDoneEl) {
+                            shakerDoneEl.style.display = 'flex';
+                            shakerDoneEl.innerHTML = `<span>✓</span> <span>Hoàn tất pha chế & đóng gói</span>`;
+                        }
+
+                        if (journeyAreaEl) journeyAreaEl.style.display = 'block';
+
+                        if (journeyNoteEl) {
+                            journeyNoteEl.innerHTML = `
+                                Phương thức: <strong>${getShipIcon(order.shippingMethod)} ${getShipName(order)}</strong> | Cước phí: <strong>${getShipFeeText(order)}</strong><br>
+                                <span style="color: #ea580c; font-size: 0.9em; font-weight: 600;">🛵 Đơn hàng đã giao đến nơi! Vui lòng kiểm tra đồ uống và bấm xác nhận bên dưới để đóng đơn.</span>
+                            `;
+                        }
+
+                        if (confirmBoxEl) confirmBoxEl.style.display = 'flex';
+                        if (closedBoxEl) closedBoxEl.style.display = 'none';
+
+                    } else {
+                        // GIAI ĐOẠN 5: ĐÃ XÁC NHẬN NHẬN HÀNG - CHÍNH THỨC ĐÓNG ĐƠN HOÀN TẤT
+                        badgeEl.className = 'status-badge completed';
+                        badgeEl.innerHTML = '<span class="status-pulse-dot"></span><span>Đã đóng đơn • Giao thành công</span>';
+
+                        if (shakerAreaEl) shakerAreaEl.style.display = 'none';
+                        if (shakerDoneEl) shakerDoneEl.style.display = 'none';
+
+                        if (journeyAreaEl) journeyAreaEl.style.display = 'block';
+
+                        if (journeyNoteEl) {
+                            journeyNoteEl.innerHTML = `
+                                Phương thức: <strong>${getShipIcon(order.shippingMethod)} ${getShipName(order)}</strong> | Cước phí: <strong>${getShipFeeText(order)}</strong><br>
+                                <span style="color: #16a34a; font-size: 0.9em; font-weight: 600;">🎉 Đơn hàng đã được xác nhận nhận hàng và đóng đơn thành công!</span>
+                            `;
+                        }
+
+                        if (confirmBoxEl) confirmBoxEl.style.display = 'none';
+                        if (closedBoxEl) {
+                            closedBoxEl.style.display = 'flex';
+                            closedBoxEl.innerHTML = `
+                                <i class="fas fa-check-circle" style="color: #16a34a; font-size: 1.1em;"></i>
+                                <span>Đã đóng đơn lúc: <strong>${order.confirmedTime || 'Hoàn tất'}</strong>. Cảm ơn bạn đã lựa chọn H&T!</span>
+                            `;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Khách hàng bấm xác nhận nhận đơn -> Chính thức đóng đơn
+        function confirmOrderReceived(orderIndex) {
+            let history = JSON.parse(localStorage.getItem('ht_history')) || [];
+            if (!history[orderIndex]) return;
+
+            history[orderIndex].isConfirmed = true;
+            let now = new Date();
+            let timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')} - ${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth()+1).padStart(2, '0')}/${now.getFullYear()}`;
+            history[orderIndex].confirmedTime = timeStr;
+
+            localStorage.setItem('ht_history', JSON.stringify(history));
+
+            updateLiveTracking();
+        }
+
+        function loadHistory() {
+            const container = document.getElementById('history-items-container');
+            const clearContainer = document.getElementById('clear-history-container');
+            let history = JSON.parse(localStorage.getItem('ht_history')) || [];
+
+            if (history.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:#666; margin: 30px 0; font-size: 1.1em;">Bạn chưa đặt đơn nào cả. Nhanh tay chốt đơn để lưu lại kỷ niệm với H&T nhé!</p>';
+                if (clearContainer) clearContainer.innerHTML = '';
+                return;
+            }
+
+            if (clearContainer) {
+                clearContainer.innerHTML = '<button onclick="clearAllHistory()" class="btn-clear-history"><i class="fas fa-trash-alt"></i> Xóa toàn bộ lịch sử</button>';
+            }
+
+            let htmlContent = '';
+            for (let i = history.length - 1; i >= 0; i--) {
+                let order = history[i];
+                let drinkTotal = 0;
+                let itemsHtml = '';
+                
+                order.items.forEach(item => {
+                    let price = typeof item.price === 'string' ? parseInt(item.price.replace(/\D/g, '')) : item.price;
+                    if (isNaN(price)) price = 0;
+                    let qty = item.quantity || 1;
+                    drinkTotal += price * qty;
+                    itemsHtml += `
+                    <div class="tray-item" style="border-bottom: none; margin-bottom: 10px; padding: 0;">
+                        <div class="tray-item-info">
+                            <h4 style="margin: 0 0 5px 0;">${item.name}</h4>
+                            <p class="tray-variants" style="margin: 0; font-size: 0.9em;">${item.variants || ''}</p>
+                            <p class="tray-toppings" style="margin: 0; font-size: 0.85em;">${item.toppings || ''}</p>
+                        </div>
+                        <div class="tray-item-price">
+                            <h4 style="margin: 0 0 5px 0;">${price.toLocaleString('vi-VN')}đ</h4>
+                            <p style="margin: 0; font-size: 0.9em;">SL: ${qty}</p>
+                        </div>
+                    </div>`;
+                });
+
+                let shipIcon = getShipIcon(order.shippingMethod);
+                let shipName = getShipName(order);
+                let shipFee = getShipFee(order);
+                let shipFeeText = getShipFeeText(order);
+
+                let grandTotal = (order.drinkTotal || drinkTotal) + shipFee;
+                let grandTotalText = order.total || (grandTotal.toLocaleString('vi-VN') + 'đ');
+
+                // Marker emoji ban đầu: Cốc giấy 🥤 nếu là kẻ dịch chuyển, icon phương tiện nếu là khác
+                let displayMarkerEmoji = (order.shippingMethod === 'portal') ? '🥤' : shipIcon;
+                let isFastBar = (order.voucher === 'FASTBAR' || order.prepDurationOverride === 10);
+                let initialShakerTitle = isFastBar 
+                    ? '⚡ Barista đang pha chế thần tốc (Ưu đãi FASTBAR)' 
+                    : 'Barista đang đập đá và pha chế';
+
+                // Khung giao diện tiến trình tuần tự (Không còn thanh tiến trình pha chế)
+                let trackerHtml = `
+                <div class="order-tracker-card" id="order-tracker-${i}">
+                    <div class="tracker-header">
+                        <div class="tracker-header-title">
+                            <span>TIẾN TRÌNH ĐƠN HÀNG</span>
+                        </div>
+                        <div class="status-badge prep" id="order-badge-${i}">
+                            <span class="status-pulse-dot"></span>
+                            <span>Đang pha chế</span>
+                        </div>
+                    </div>
+
+                    <!-- Khung 1: Barista Pha chế & Đóng gói (Không còn thanh chạy, chỉ hiển thị trạng thái và thời gian ước tính) -->
+                    <div class="tracker-shaker-area" id="order-shaker-area-${i}">
+                        <div class="shaker-icon-box" id="order-shaker-icon-${i}">🍸</div>
+                        <div class="shaker-info">
+                            <div class="shaker-info-title" id="order-shaker-title-${i}">${initialShakerTitle}</div>
+                            <div class="shaker-info-sub" id="order-shaker-note-${i}">Thời gian ước tính: ~3p</div>
+                        </div>
+                    </div>
+
+                    <!-- Dòng thu gọn sau khi pha xong & đóng gói xong -->
+                    <div class="shaker-done-line" id="order-shaker-done-${i}" style="display: none;"></div>
+
+                    <!-- Khung 2: Hành trình vận chuyển (Chỉ hiện khi pha xong và bắt đầu giao) -->
+                    <div class="tracker-journey-area" id="order-journey-area-${i}" style="display: none;">
+                        <div class="journey-track-wrapper">
+                            <div class="journey-track-line">
+                                <div class="journey-track-progress" id="order-journey-fill-${i}"></div>
+                                <div class="journey-track-progress-p2" id="order-journey-fill-p2-${i}" style="display: none;"></div>
+                                <div class="portal-gate portal-gate-1" id="order-portal-1-${i}">🌀</div>
+                                <div class="portal-gate portal-gate-2" id="order-portal-2-${i}">🌀</div>
+                                <div class="journey-vehicle-marker ${(!order.shippingMethod || order.shippingMethod === 'bike') ? 'vehicle-bike' : ''}" id="order-journey-marker-${i}">${displayMarkerEmoji}</div>
+                            </div>
+                        </div>
+                        <div class="journey-stations">
+                            <span>🏪 Cửa hàng H&T</span>
+                            <span>📍 ${order.city || 'Điểm giao hàng'}</span>
+                        </div>
+                        <div class="journey-note" id="order-journey-note-${i}">
+                            Phương thức: <strong>${shipIcon} ${shipName}</strong> | Cước phí: <strong>${shipFeeText}</strong>
+                        </div>
+
+                        <!-- Khung nút xác nhận đã nhận hàng (Chỉ hiện khi ship xong và chưa đóng đơn) -->
+                        <div class="confirm-delivery-box" id="order-confirm-box-${i}" style="display: none;">
+                            <span class="confirm-delivery-msg">Đồ uống đã giao đến bạn an toàn! Hãy kiểm tra và bấm xác nhận để đóng đơn nhé.</span>
+                            <button type="button" class="btn-confirm-received" onclick="confirmOrderReceived(${i})">
+                                <i class="fas fa-check-circle"></i> Đã nhận được hàng
+                            </button>
+                        </div>
+
+                        <!-- Dòng thông báo khi đơn đã được đóng -->
+                        <div class="order-closed-box" id="order-closed-box-${i}" style="display: none;"></div>
+                    </div>
+                </div>`;
+
+                htmlContent += `
+                <div class="brand-item" style="margin-bottom: 25px;">
+                    <div class="order-card-header" style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px dashed #ccc; padding-bottom: 10px; margin-bottom: 15px;">
+                        <div>
+                            <h3 style="color: #d25d19; margin: 0 0 5px 0; font-size: 1.15em;">
+                                🛒 Đơn hàng ${order.orderId ? order.orderId + " " : ""}(chốt lúc ${order.date})
+                            </h3>
+                            <div style="font-size: 0.9em; color: #555; line-height: 1.6;">
+                                <span>👤 <strong>Người nhận:</strong> ${order.name || 'Khách hàng'}</span> | 
+                                <span><strong>SĐT:</strong> ${order.phone || 'Chưa cung cấp'}</span> <br>
+                                <span>📍 <strong>Địa chỉ nhận:</strong> ${order.address || 'Không có địa chỉ'}</span>
+                            </div>
+                        </div>
+                        <button onclick="deleteSingleOrder(${i})" class="btn-delete-order" title="Xóa đơn này">[Xóa đơn]</button>
+                    </div>
+
+                    <!-- Khung tiến trình tuần tự -->
+                    ${trackerHtml}
+
+                    <!-- Danh sách món -->
+                    <div style="margin: 15px 0 10px 0;">
+                        <h4 style="margin: 0 0 10px 0; color: #4a4a4a; font-size: 1em;">📋 Món đã chọn:</h4>
+                        ${itemsHtml}
+                    </div>
+
+                    <!-- Chi tiết tổng thanh toán -->
+                    <div style="border-top: 1px dashed #ffdcb8; padding-top: 10px; margin-top: 10px; font-size: 0.95em;">
+                        <div style="display: flex; justify-content: space-between; color: #666; margin-bottom: 4px;">
+                            <span>Tiền nước:</span>
+                            <span>${(order.drinkTotal || drinkTotal).toLocaleString('vi-VN')}đ</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; color: #666; margin-bottom: 6px;">
+                            <span>Phí vận chuyển (${shipName}):</span>
+                            <span>${shipFeeText}</span>
+                        </div>
+                        ${order.voucher ? `
+                        <div style="display: flex; justify-content: space-between; color: #16a34a; margin-bottom: 6px; font-weight: 600;">
+                            <span>Mã ưu đãi (${order.voucher}):</span>
+                            <span>Pha chế thần tốc 10s</span>
+                        </div>` : ''}
+                        <div style="display: flex; justify-content: space-between; font-weight: bold; color: #ff6b35; font-size: 1.25em; border-top: 1px solid #ffdcb8; padding-top: 6px;">
+                            <span>Tổng thanh toán:</span>
+                            <span>${grandTotalText}</span>
+                        </div>
+                    </div>
+                </div>`;
+            }
+
+            container.innerHTML = htmlContent;
+
+            updateLiveTracking();
+
+            clearInterval(window.liveTrackingInterval);
+            window.liveTrackingInterval = setInterval(updateLiveTracking, 100);
+        }
+
+        function clearAllHistory() {
+            if (confirm('Bạn có chắc chắn muốn xóa toàn bộ lịch sử đơn hàng không?')) {
+                clearInterval(window.liveTrackingInterval);
+                localStorage.removeItem('ht_history');
+                loadHistory();
+            }
+        }
+
+        function deleteSingleOrder(index) {
+            if (confirm('Bạn muốn xóa đơn hàng này khỏi lịch sử chứ?')) {
+                let history = JSON.parse(localStorage.getItem('ht_history')) || [];
+                history.splice(index, 1);
+                localStorage.setItem('ht_history', JSON.stringify(history));
+                loadHistory();
+            }
+        }
+
+        window.onload = loadHistory;
+    </script>
+
+	<footer class="ht-footer">
+    <div class="footer-container">
+        <h1>H&T Trà sữa</h1>
+        <p>Địa chỉ: 123 Đường Lê Lợi, TP. Vũng Tàu</p>
+        <p>Email: lienhe@ht-trasua.com | Hotline: 09xx.xxx.xxx</p>
+        
+        <div class="footer-social">
+            <p>Kết nối với chúng mình:</p>
+            <div class="social-icons">
+                <a href="#" class="icon-link"><i class="fab fa-facebook"></i></a>
+                <a href="#" class="icon-link"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="icon-link"><i class="fab fa-facebook-messenger"></i></a>
+                <a href="#" class="icon-link"><i class="fab fa-tiktok"></i></a>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <a href="Terms.html">Điều khoản</a> | <a href="Privacy.html">Chính sách bảo mật</a>
+        </div>
+        
+        <hr class="footer-divider">
+        
+        <p class="copyright">© 2026 H&T Trà sữa. Thiết kế và Phát triển bởi: Trần Thái Hoài | Hỗ trợ giai đoạn đầu: Ngọc Thúy. All rights reserved.</p>
+    </div>
+	</footer>
+
+    <script>
+    function updateHeaderCartBadge() {
+        try {
+            let cart = JSON.parse(localStorage.getItem('ht_cart')) || [];
+            let total = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+            let badges = document.querySelectorAll('.header-cart-badge');
+            badges.forEach(b => {
+                if (total > 0) {
+                    b.textContent = total;
+                    b.style.display = 'inline-block';
+                } else {
+                    b.style.display = 'none';
+                }
+            });
+        } catch(e) {}
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', updateHeaderCartBadge);
+    } else {
+        updateHeaderCartBadge();
+    }
+    </script>
+
+</body>
+</html>

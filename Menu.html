@@ -1,0 +1,357 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H&T Milk Tea - Menu</title>
+    <link rel="icon" type="image/png" href="Ts-img/logo.png">
+    <link rel="stylesheet" href="style1.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="menu-page">
+
+    <header class="main-header">
+    <nav class="nav-left">
+        <a href="Menu.html" class="active">Menu</a>
+        <a href="History.html">Lịch sử<span class="nav-long-text"> Đơn hàng</span></a>
+    </nav>
+
+    <a href="index.html" class="logo-center">
+        <img src="Ts-img/logo.png" alt="H&T Logo" class="header-logo">
+        <h1>H<span class="highlight">&</span>T</h1>
+    </a>
+
+    <nav class="nav-right">
+        <a href="Tray.html">Khay<span class="header-cart-badge" style="display:none;"></span></a>
+        <a href="Support.html">Hỗ trợ</a>
+    </nav>
+	</header>
+
+    <div class="menu-fixed-cover"></div>
+
+    
+		<main class="menu-container">
+			<h2 class="menu-title">MENU</h2>
+            <p class="menu-instruct">Giá món chưa bao gồm 'phụ kiện'. Đừng quên chọn thêm topping bạn yêu thích nha!</p>
+
+            
+				<input type="radio" id="filter-all" name="menu-filter" checked hidden>
+				<input type="radio" id="filter-trasua" name="menu-filter" hidden>
+				<input type="radio" id="filter-tratraicay" name="menu-filter" hidden>
+				<input type="radio" id="filter-tratuoi" name="menu-filter" hidden>
+				<input type="radio" id="filter-topping" name="menu-filter" hidden>
+
+				<div class="filter-bar">
+					<label for="filter-all" class="filter-btn">Tất cả</label>
+					<label for="filter-trasua" class="filter-btn">Trà sữa</label>
+					<label for="filter-tratraicay" class="filter-btn">Trà trái cây</label>
+					<label for="filter-tratuoi" class="filter-btn">Trà tươi</label>
+					<label for="filter-topping" class="filter-btn">Topping riêng</label>
+				</div>
+
+            <div class="product-grid">
+				
+				<a href="product-info.html?id=HnT_SG" class="product-card item-trasua">
+				
+					<img src="Ts-img/fire-icon.png" alt="Best Seller" class="best-seller-icon">
+					
+					<div class="product-img">
+						<img src="Ts-img/HnT_SG.png" alt="Trà sữa">
+					</div>
+					
+					<div class="product-info">
+						<img src="Ts-img/signature-text.png" alt="Signature" class="signature-badge">
+						
+						<h3>H&T Structural Grey</h3>
+						<p class="product-desc">Vẻ đẹp của sự thô mộc và cấu trúc vững chãi trong từng nốt vị</p>
+						
+						<div class="price-tag">30.000đ</div>
+						
+					</div>
+					
+				</a>
+				
+				<a href="product-info.html?id=HnT_BE" class="product-card item-tratraicay">
+				
+					<div class="product-img">
+						<img src="Ts-img/HnT_BE.png" alt="Trà trái cây">
+					</div>
+					
+					<div class="product-info">
+						<img src="Ts-img/signature-text.png" alt="Signature" class="signature-badge">
+						
+						<h3>H&T Botanical Equilibrium</h3>
+						<p class="product-desc">Trạng thái cân bằng tĩnh lặng giữa hương thảo mộc và dư vị êm ái</p>
+						
+						<div class="price-tag">30.000đ</div>
+						
+					</div>
+					
+				</a>
+				
+				<a href="product-info.html?id=Tt_GaoRang" class="product-card item-tratuoi">
+					
+					<img src="Ts-img/fire-icon.png" alt="Best Seller" class="best-seller-icon">
+				
+					<div class="product-img">
+						<img src="Ts-img/Tt_GaoRang.jpg" alt="Trà tươi">
+					</div>
+					
+					<div class="product-info">
+						<h3>Trà Gạo Rang</h3>
+						<p class="product-desc">Nét mộc mạc gói gọn trong hương thơm ấm áp của lúa mới sém lửa</p>
+						
+						<div class="price-tag">25.000đ</div>
+						
+					</div>
+				</a>
+				
+				<a href="product-info.html?id=Ts_HongKong" class="product-card item-trasua">
+					<img src="Ts-img/fire-icon.png" alt="Best Seller" class="best-seller-icon">
+					
+					<div class="product-img">
+						<img src="Ts-img/Ts_HongKong.jpg" alt="Trà trái cây">
+					</div>
+					
+					<div class="product-info">
+						<h3>Trà Sữa Hong Kong</h3>
+						<p class="product-desc">Nhịp sống nồng nhiệt trong hương trà chát đậm và sữa đặc béo ngậy</p>
+						
+						<div class="price-tag">27.000đ</div>
+						
+					</div>
+				</a>
+				
+				<a href="product-info.html?id=T_DauTam" class="product-card item-tratraicay">
+					<img src="Ts-img/fire-icon.png" alt="Best Seller" class="best-seller-icon">
+					
+					<div class="product-img">
+						<img src="Ts-img/T_DauTam.jpg" alt="Trà trái cây">
+					</div>
+					
+					<div class="product-info">
+						<h3>Trà Dâu Tằm</h3>
+						<p class="product-desc">Sắc đỏ tía quyến rũ mang theo vị chua thanh sắc nét của mùa hè</p>
+						
+						<div class="price-tag">22.000đ</div>
+						
+					</div>
+				</a>
+				
+				<a href="product-info.html?id=Ts_nuong" class="product-card item-trasua">
+				
+					<div class="product-img">
+						<img src="Ts-img/Ts_nuong.jpg" alt="Trà sữa">
+					</div>
+					
+					<div class="product-info">
+						<h3>Trà Sữa nướng</h3>
+						<p class="product-desc">Dư âm ấm áp của đường nướng cháy cạnh đọng lại sâu sắc</p>
+						
+						<div class="price-tag">27.000đ</div>
+						
+					</div>
+				</a>
+				
+				<a href="product-info.html?id=Ts_TQA" class="product-card item-trasua">
+				
+					<div class="product-img">
+						<img src="Ts-img/Ts_TQA.jpg" alt="Trà sữa">
+					</div>
+					
+					<div class="product-info">
+						<h3>Trà Sữa Thiết Quan Âm</h3>
+						<p class="product-desc">Sự thanh tao mộc mạc ẩn dưới lớp hương hoa dịu dàng tĩnh lặng</p>
+						
+						<div class="price-tag">25.000đ</div>
+						
+					</div>
+				</a>
+
+				<a href="product-info.html?id=Ts_Matcha" class="product-card item-trasua">
+				
+					<div class="product-img">
+						<img src="Ts-img/Ts_Matcha.jpg" alt="Trà sữa">
+					</div>
+					
+					<div class="product-info">
+						<h3>Trà Sữa Matcha</h3>
+						<p class="product-desc">Nét tươi mới của lá trà lục bích quyện trong dòng sữa thanh mát</p>
+						
+						<div class="price-tag">25.000đ</div>
+						
+					</div>
+				</a>
+				
+				<a href="product-info.html?id=Ts_ThanTre" class="product-card item-trasua">
+				
+					<div class="product-img">
+						<img src="Ts-img/Ts_ThanTre.jpg" alt="Trà sữa">
+					</div>
+					
+					<div class="product-info">
+						<h3>Trà Sữa than tre</h3>
+						<p class="product-desc">Cấu trúc êm mượt, làm nền tảng tôn vinh trọn vẹn độ ngậy của sữa </p>
+						
+						<div class="price-tag">25.000đ</div>
+						
+					</div>
+				</a>
+				
+				<a href="product-info.html?id=Tt_LaiSuaTuoi" class="product-card item-tratuoi">
+				
+					<div class="product-img">
+						<img src="Ts-img/Tt_LaiSuaTuoi.jpg" alt="Trà sữa">
+					</div>
+					
+					<div class="product-info">
+						<h3>Trà Lài Sữa Tươi</h3>
+						<p class="product-desc">Vẻ đẹp tinh khôi toát ra từ sắc trắng ngần và hương nhài nguyên bản</p>
+						
+						<div class="price-tag">25.000đ</div>
+						
+					</div>
+				</a>
+				
+				<a href="product-info.html?id=Tt_OlongSua" class="product-card item-tratuoi">
+				
+					<div class="product-img">
+						<img src="Ts-img/Tt_OlongSua.jpg" alt="Trà tươi">
+					</div>
+					
+					<div class="product-info">
+						<h3>Ô Long Sữa Tươi</h3>
+						<p class="product-desc">Vị trà bán lên men đằm thắm cuộn trào trong dòng sữa mượt mà</p>
+						
+						<div class="price-tag">25.000đ</div>
+						
+					</div>
+				</a>
+
+				<a href="product-info.html?id=T_VaiLai" class="product-card item-trasua item-tratraicay">
+					
+					<div class="product-img">
+						<img src="Ts-img/T_VaiLai.jpg" alt="Trà trái cây">
+					</div>
+					
+					<div class="product-info">
+						<h3>Trà Vải Lài</h3>
+						<p class="product-desc">Thanh mát, giải nhiệt cho ngày dài năng động</p>
+						
+						<div class="price-tag">25.000đ</div>
+						
+					</div>
+				</a>
+				
+				<a href="product-info.html?id=T_DaoCamSa" class="product-card item-tratraicay">
+				
+					<div class="product-img">
+						<img src="Ts-img/T_DaoCamSa.jpg" alt="Trà trái cây">
+					</div>
+					
+					<div class="product-info">
+						<h3>Trà Đào Cam Sả</h3>
+						<p class="product-desc">Vị chua ngọt rực rỡ và sảng khoái đánh thức trọn vẹn mọi giác quan</p>
+						
+						<div class="price-tag">22.000đ</div>
+						
+					</div>
+				</a>
+				
+				<a href="product-info.html?id=T_MangCau" class="product-card item-tratraicay">
+				
+					<div class="product-img">
+						<img src="Ts-img/T_MangCau.jpg" alt="Trà trái cây">
+					</div>
+					
+					<div class="product-info">
+						<h3>Trà Mãng Cầu</h3>
+						<p class="product-desc">Trải nghiệm chân thật với vị chua ngọt sảng khoái, nhai sần sật vui miệng</p>
+						
+						<div class="price-tag">22.000đ</div>
+						
+					</div>
+				</a>
+				
+				<a href="product-info.html?id=Top_ChanMeo" class="product-card item-topping">
+					<div class="product-img"><img src="Ts-img/Top_ChanMeo.jpg" alt="Topping"></div>
+					<div class="product-info">
+						<h3>Pudding Chân Mèo</h3>
+						<p class="product-desc">Món topping biểu tượng với độ mềm mịn và tạo hình đáng yêu</p>
+						<div class="price-tag">15.000đ</div>
+					</div>
+				</a>
+
+				<a href="product-info.html?id=Top_PhoMai" class="product-card item-topping">
+					<div class="product-img"><img src="Ts-img/Top_PhoMai.jpg" alt="Topping"></div>
+					<div class="product-info">
+						<h3>Thạch Phô Mai Viên</h3>
+						<p class="product-desc">Lớp vỏ dai giòn ôm trọn viên phô mai béo ngậy tan chảy</p>
+						<div class="price-tag">8.000đ</div>
+					</div>
+				</a>
+
+				<a href="product-info.html?id=Top_KemMuoi" class="product-card item-topping">
+					<div class="product-img"><img src="Ts-img/Top_KemMuoi.jpg" alt="Topping"></div>
+					<div class="product-info">
+						<h3>Kem Muối Biển</h3>
+						<p class="product-desc">Lớp kem mặn đặc trưng, sự kết hợp hoàn hảo giữa vị béo và mặn</p>
+						<div class="price-tag">5.000đ</div>
+					</div>
+				</a>
+				
+			</div>
+				
+				
+			</main>
+
+	<footer class="ht-footer">
+    <div class="footer-container">
+        <h1>H&T Trà sữa</h1>
+        <p>Địa chỉ: 123 Đường Lê Lợi, TP. Vũng Tàu</p>
+        <p>Email: lienhe@ht-trasua.com | Hotline: 09xx.xxx.xxx</p>
+        
+        <div class="footer-social">
+            <p>Kết nối với chúng mình:</p>
+            <div class="social-icons">
+                <a href="#" class="icon-link"><i class="fab fa-facebook"></i></a>
+                <a href="#" class="icon-link"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="icon-link"><i class="fab fa-facebook-messenger"></i></a>
+                <a href="#" class="icon-link"><i class="fab fa-tiktok"></i></a>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <a href="Terms.html">Điều khoản</a> | <a href="Privacy.html">Chính sách bảo mật</a>
+        </div>
+        
+        <hr class="footer-divider">
+        
+        <p class="copyright">© 2026 H&T Trà sữa. Thiết kế và Phát triển bởi: Trần Thái Hoài | Hỗ trợ giai đoạn đầu: Ngọc Thúy. All rights reserved.</p>
+    </div>
+	</footer>
+
+    <script>
+    function updateHeaderCartBadge() {
+        try {
+            let cart = JSON.parse(localStorage.getItem('ht_cart')) || [];
+            let total = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+            let badges = document.querySelectorAll('.header-cart-badge');
+            badges.forEach(b => {
+                if (total > 0) {
+                    b.textContent = total;
+                    b.style.display = 'inline-block';
+                } else {
+                    b.style.display = 'none';
+                }
+            });
+        } catch(e) {}
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', updateHeaderCartBadge);
+    } else {
+        updateHeaderCartBadge();
+    }
+    </script>
+</body>
+</html>
