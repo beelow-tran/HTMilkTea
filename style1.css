@@ -1856,10 +1856,10 @@ input:checked + .topping-chip {
 @media (max-width: 768px) {
     /* 0. Khóa tràn viền ngang tuyệt đối */
     html, body {
-        overflow-x: hidden !important;
-        max-width: 100vw;
-        -webkit-text-size-adjust: 100%;
-    }
+    overflow-x: clip !important;
+    max-width: 100vw;
+    -webkit-text-size-adjust: 100%;
+	}
 
     *, *::before, *::after {
         box-sizing: border-box;
